@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@font-face {
+  font-family: 'Scholar';
+  src: url('./assets/fonts/scholar-regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
