@@ -1,0 +1,73 @@
+.loader {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Plane */
+.plane {
+  position: absolute;
+  width: 60px;
+  z-index: 2;
+  animation: floatPlane 1s ease-in-out infinite;
+}
+
+/* Clouds */
+.clouds {
+  position: absolute;
+  right: -40px; 
+  width: 40px;
+  opacity: 0.8;
+}
+
+/* Back clouds (slower, further away) */
+.clouds--back {
+  animation: moveCloudsBack 8s linear infinite;
+  top: 50px;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+/* Front clouds (faster, closer) */
+.clouds--front {
+  animation: moveCloudsFront 5s linear infinite;
+  bottom: 35px;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+/* Plane floating up/down */
+@keyframes floatPlane {
+  0% {
+    transform: translateY(1px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-1px) rotate(-0.5deg);
+  }
+  100% {
+    transform: translateY(1px) rotate(0deg);
+  }
+}
+
+/* Cloud movement (parallax effect) */
+@keyframes moveCloudsBack {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-250px);
+  }
+}
+
+@keyframes moveCloudsFront {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-200px);
+  }
+}

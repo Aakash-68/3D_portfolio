@@ -7,7 +7,7 @@ import React, {
 import { useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
-import { GLOBE_RADIUS } from "./World";
+import { GLOBE_RADIUS } from "../game/World";
 
 interface Config {
   forwardSpeed: number;
