@@ -1,29 +1,24 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { useNavigate } from "react-router-dom";
 
-interface HitboxProps {
-  object: THREE.Object3D;
-  playerRef: React.RefObject<THREE.Object3D>;
-  onInteract: () => void;
-  debug?: boolean;
+interface Props {
+  targetRef: React.RefObject<THREE.Object3D>; // plane or player
+  scale?: number;
 }
 
-export default function Hitbox({
-  object,
-  playerRef,
-  onInteract,
-  debug = false,
-}: HitboxProps) {
+export default function Hitbox({ targetRef, scale = 32 }: Props) {
   const hitboxRef = useRef<THREE.Group>(null!);
+  const { scene: hitboxScene } = useGLTF("/src/assets/models/hitBox.glb");
+
   const [inHitbox, setInHitbox] = useState(false);
+  const navigate = useNavigate();
 
-  const clonedObject = useMemo(() => object.clone(true), [object]);
-
+  // Configure material
   useEffect(() => {
-    if (!debug) return;
-
-    clonedObject.traverse((child: any) => {
+    hitboxScene.traverse((child: any) => {
       if (child.isMesh) {
         child.material = new THREE.MeshBasicMaterial({
           color: "red",
@@ -32,33 +27,34 @@ export default function Hitbox({
         });
       }
     });
-  }, [clonedObject, debug]);
+  }, [hitboxScene]);
 
   // Collision detection
   useFrame(() => {
-    if (!hitboxRef.current || !playerRef.current) return;
+    if (!hitboxRef.current || !targetRef.current) return;
 
     const hitboxBox = new THREE.Box3().setFromObject(hitboxRef.current);
-    const playerBox = new THREE.Box3().setFromObject(playerRef.current);
+    const targetBox = new THREE.Box3().setFromObject(targetRef.current);
 
-    setInHitbox(hitboxBox.intersectsBox(playerBox));
+    const intersecting = hitboxBox.intersectsBox(targetBox);
+    setInHitbox(intersecting);
   });
 
-  // Key press
+  // Interaction (press E)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && inHitbox) {
-        onInteract();
+        navigate("/");
       }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [inHitbox, onInteract]);
+  }, [inHitbox, navigate]);
 
   return (
-    <group ref={hitboxRef}>
-      <primitive object={clonedObject} />
+    <group ref={hitboxRef} scale={scale}>
+      <primitive object={hitboxScene} />
     </group>
   );
 }

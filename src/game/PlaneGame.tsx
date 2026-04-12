@@ -68,9 +68,8 @@ export default function PlaneGame({ config }: Props) {
           <Environment preset="sunset" environmentIntensity={0.3} />
           <CameraLight />
           <ambientLight intensity={1} />
-
           <Plane ref={planeRef} config={config} />
-          <World config={config} />
+          <World config={config} playerRef={planeRef} />{" "}
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
         </Suspense>
       </Canvas>

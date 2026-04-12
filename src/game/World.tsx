@@ -1,8 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
-import { useNavigate } from "react-router-dom"; // for navigation
+import Hitbox from "./Hitbox";
 
 interface Config {
   globeRotationSpeed: number;
@@ -10,24 +9,17 @@ interface Config {
 
 interface Props {
   config: Config;
+  playerRef: React.RefObject<THREE.Object3D>; // 👈 IMPORTANT
 }
 
 export const GLOBE_RADIUS = 50;
 
-export default function World({ config }: Props) {
+export default function World({ config, playerRef }: Props) {
   const globeRef = useRef<THREE.Group>(null!);
   const visualGlobeRef = useRef<THREE.Group>(null!);
-  const hitboxRef = useRef<THREE.Group>(null!);
 
-  const [inHitbox, setInHitbox] = useState(false);
-  const navigate = useNavigate();
-
-  // Load MAIN globe
   const { scene, animations } = useGLTF("/src/assets/models/globe.glb");
   const { actions } = useAnimations(animations, visualGlobeRef);
-
-  // Load HITBOX globe
-  const { scene: hitboxScene } = useGLTF("/src/assets/models/hitBox.glb");
 
   // Make globe matte
   useEffect(() => {
@@ -46,24 +38,7 @@ export default function World({ config }: Props) {
     });
   }, [scene]);
 
-  // Configure hitbox material
-  useEffect(() => {
-    hitboxScene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.castShadow = false;
-        child.receiveShadow = false;
-
-        child.material = new THREE.MeshBasicMaterial({
-          color: "red",
-          wireframe: false,
-          transparent: true,
-          opacity: 0.15,
-        });
-      }
-    });
-  }, [hitboxScene]);
-
-  // Play animations if any exist
+  // Play animations
   useEffect(() => {
     if (actions) {
       Object.values(actions).forEach((action) => {
@@ -72,47 +47,21 @@ export default function World({ config }: Props) {
     }
   }, [actions]);
 
-  // --- HITBOX DETECTION ---
-  useFrame(() => {
-    if (!hitboxRef.current || !globeRef.current) return;
-
-    // Compute bounding boxes
-    const hitboxBox = new THREE.Box3().setFromObject(hitboxRef.current);
-    const planeBox = new THREE.Box3().setFromObject(globeRef.current); // replace with your plane ref if you have one
-
-    // Check intersection
-    const intersecting = hitboxBox.intersectsBox(planeBox);
-    setInHitbox(intersecting);
-  });
-
-  // Keyboard listener
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "e" && inHitbox) {
-        navigate("/"); // redirect to root page
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [inHitbox, navigate]);
-
   return (
     <group ref={globeRef} position={[0, 0, 0]}>
-      {/* INVISIBLE LOGIC GLOBE */}
+      {/* Invisible physics globe */}
       <mesh receiveShadow>
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
         <meshStandardMaterial transparent opacity={0} />
       </mesh>
 
-      {/* VISUAL GLB GLOBE */}
+      {/* Visual globe */}
       <group ref={visualGlobeRef} scale={32}>
         <primitive object={scene} />
       </group>
 
-      {/* HITBOX OVERLAY */}
-      <group ref={hitboxRef} scale={32}>
-        <primitive object={hitboxScene} />
-      </group>
+      {/* 🔥 Separate Hitbox */}
+      <Hitbox targetRef={playerRef} scale={32} />
     </group>
   );
 }
