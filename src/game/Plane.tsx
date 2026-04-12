@@ -19,14 +19,12 @@ interface Config {
 interface Props {
   config: Config;
   isLocked?: boolean;
-  joystick?: { x: number; y: number } | null;
-  boost?: boolean;
 }
 
 const PLANE_HEIGHT = -11;
 
 const Plane = forwardRef<THREE.Group, Props>(
-  ({ config, isLocked = false, joystick, boost }, ref) => {
+  ({ config, isLocked = false }, ref) => {
     const groupRef = useRef<THREE.Group>(null!);
     const meshRef = useRef<THREE.Group>(null!);
 
@@ -54,21 +52,27 @@ const Plane = forwardRef<THREE.Group, Props>(
     const keys = useRef<{ [key: string]: boolean }>({});
 
     useEffect(() => {
-      const down = (e: KeyboardEvent) => (keys.current[e.code] = true);
-      const up = (e: KeyboardEvent) => (keys.current[e.code] = false);
+      const handleKeyDown = (e: KeyboardEvent) => {
+        keys.current[e.code] = true;
+      };
+      const handleKeyUp = (e: KeyboardEvent) => {
+        keys.current[e.code] = false;
+      };
 
-      window.addEventListener("keydown", down);
-      window.addEventListener("keyup", up);
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
 
       return () => {
-        window.removeEventListener("keydown", down);
-        window.removeEventListener("keyup", up);
+        window.removeEventListener("keydown", handleKeyDown);
+        window.removeEventListener("keyup", handleKeyUp);
       };
     }, []);
 
     useEffect(() => {
       if (actions) {
-        Object.values(actions).forEach((a) => a?.reset().play());
+        Object.values(actions).forEach((action) => {
+          action?.reset().play();
+        });
       }
     }, [actions]);
 
@@ -77,27 +81,20 @@ const Plane = forwardRef<THREE.Group, Props>(
     const currentTurn = useRef(0);
     const currentSpeed = useRef(0);
 
-    useFrame((_, delta) => {
-      if (!groupRef.current || isLocked) return;
+    useFrame((state, delta) => {
+      if (!groupRef.current) return;
+      if (isLocked) return;
 
-      const jx = joystick?.x ?? 0;
-      const jy = joystick?.y ?? 0;
-
-      const isForward = joystick ? jy < -0.2 : keys.current["KeyW"];
-      const isSlow = joystick ? jy > 0.2 : keys.current["KeyS"];
-      const isLeft = joystick ? jx < -0.2 : keys.current["KeyA"];
-      const isRight = joystick ? jx > 0.2 : keys.current["KeyD"];
+      const isForward = keys.current["KeyW"] || keys.current["ArrowUp"];
+      const isSlow = keys.current["KeyS"] || keys.current["ArrowDown"];
+      const isLeft = keys.current["KeyA"] || keys.current["ArrowLeft"];
+      const isRight = keys.current["KeyD"] || keys.current["ArrowRight"];
 
       const baseSpeed = 0.45;
       let targetSpeed = baseSpeed;
 
-      if (joystick) {
-        targetSpeed = baseSpeed * (1 + -jy); // analog forward/back
-      } else {
-        if (boost) targetSpeed = baseSpeed * 1.8;
-        else if (isSlow) targetSpeed = baseSpeed * 0.15;
-        else if (!isForward) targetSpeed = baseSpeed * 0.35;
-      }
+      if (isSlow) targetSpeed = baseSpeed * 0.15;
+      else if (!isForward) targetSpeed = baseSpeed * 0.35;
 
       currentSpeed.current = THREE.MathUtils.lerp(
         currentSpeed.current,
@@ -106,13 +103,8 @@ const Plane = forwardRef<THREE.Group, Props>(
       );
 
       let targetTurn = 0;
-
-      if (joystick) {
-        targetTurn = -jx * config.turnAmount;
-      } else {
-        if (isLeft) targetTurn = config.turnAmount;
-        if (isRight) targetTurn = -config.turnAmount;
-      }
+      if (isLeft) targetTurn = config.turnAmount;
+      if (isRight) targetTurn = -config.turnAmount;
 
       currentTurn.current = THREE.MathUtils.lerp(
         currentTurn.current,

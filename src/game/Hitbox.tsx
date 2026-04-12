@@ -1,76 +1,64 @@
-import React, { useRef, useEffect, useState } from "react";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useRef, useEffect, useState, useMemo } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import { useNavigate } from "react-router-dom"; // for navigation
 
-interface Config {
-  globeRotationSpeed: number;
+interface HitboxProps {
+  object: THREE.Object3D;
+  playerRef: React.RefObject<THREE.Object3D>;
+  onInteract: () => void;
+  debug?: boolean;
 }
 
-interface Props {
-  config: Config;
-}
-
-export const GLOBE_RADIUS = 50;
-
-export default function Hitbox({ config }: Props) {
-  const globeRef = useRef<THREE.Group>(null!);
+export default function Hitbox({
+  object,
+  playerRef,
+  onInteract,
+  debug = false,
+}: HitboxProps) {
   const hitboxRef = useRef<THREE.Group>(null!);
-
   const [inHitbox, setInHitbox] = useState(false);
-  const navigate = useNavigate();
 
-  // Load HITBOX globe
-  const { scene: hitboxScene } = useGLTF("/src/assets/models/hitBox.glb");
+  const clonedObject = useMemo(() => object.clone(true), [object]);
 
-  // Configure hitbox material
   useEffect(() => {
-    hitboxScene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.castShadow = false;
-        child.receiveShadow = false;
+    if (!debug) return;
 
+    clonedObject.traverse((child: any) => {
+      if (child.isMesh) {
         child.material = new THREE.MeshBasicMaterial({
           color: "red",
-          wireframe: false,
           transparent: true,
           opacity: 0.15,
         });
       }
     });
-  }, [hitboxScene]);
+  }, [clonedObject, debug]);
 
-  // --- HITBOX DETECTION ---
+  // Collision detection
   useFrame(() => {
-    if (!hitboxRef.current || !globeRef.current) return;
+    if (!hitboxRef.current || !playerRef.current) return;
 
-    // Compute bounding boxes
     const hitboxBox = new THREE.Box3().setFromObject(hitboxRef.current);
-    const planeBox = new THREE.Box3().setFromObject(globeRef.current); // replace with your plane ref if you have one
+    const playerBox = new THREE.Box3().setFromObject(playerRef.current);
 
-    // Check intersection
-    const intersecting = hitboxBox.intersectsBox(planeBox);
-    setInHitbox(intersecting);
+    setInHitbox(hitboxBox.intersectsBox(playerBox));
   });
 
-  // Keyboard listener
+  // Key press
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && inHitbox) {
-        navigate("/"); // redirect to root page
+        onInteract();
       }
     };
+
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [inHitbox, navigate]);
+  }, [inHitbox, onInteract]);
 
   return (
-    <group ref={globeRef} position={[0, 0, 0]}>
-      {/* HITBOX OVERLAY */}
-      <group ref={hitboxRef} scale={32}>
-        <primitive object={hitboxScene} />
-      </group>
+    <group ref={hitboxRef}>
+      <primitive object={clonedObject} />
     </group>
   );
 }
