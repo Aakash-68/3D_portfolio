@@ -8,8 +8,6 @@ import World from "./World";
 import CameraHandler from "./CameraHandler";
 import StableSky from "./StableSky";
 import { LoadingScreen } from "../components/LoadingScreen";
-import MobileJoystick from "../components/MobileJoystick";
-import InteractButton from "../components/InteractButton";
 
 interface Config {
   globeRotationSpeed: number;
@@ -38,6 +36,7 @@ function CameraLight() {
       .multiplyScalar(200);
 
     targetRef.current.position.copy(camera.position).add(forward);
+
     lightRef.current.target = targetRef.current;
     targetRef.current.updateMatrixWorld();
   });
@@ -52,60 +51,34 @@ function CameraLight() {
 
 export default function PlaneGame({ config }: Props) {
   const planeRef = useRef<THREE.Group>(null!);
-
   const [started, setStart] = useState(false);
-  const [joystick, setJoystick] = useState<{ x: number; y: number } | null>(
-    null,
-  );
-  const [interact, setInteract] = useState(false);
-
-  const isMobile =
-    typeof window !== "undefined" &&
-    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   return (
     <div className="w-full h-full relative">
-      <Canvas className="w-full h-full">
+      <Canvas
+        shadows={false}
+        gl={{
+          toneMapping: THREE.ACESFilmicToneMapping,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
+        className="w-full h-full"
+      >
         <Suspense fallback={null}>
           <StableSky />
           <Environment preset="sunset" environmentIntensity={0.3} />
           <CameraLight />
           <ambientLight intensity={1} />
-
-          <Plane
-            ref={planeRef}
-            config={config}
-            joystick={isMobile ? joystick : undefined}
-          />
-
-          <World
-            config={config}
-            playerRef={planeRef}
-            triggerInteract={interact}
-          />
-
+          <Plane ref={planeRef} config={config} />
+          <World config={config} playerRef={planeRef} />{" "}
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
         </Suspense>
       </Canvas>
 
+      {/* Loading Screen Overlay */}
       {!started && (
         <div className="absolute inset-0 z-50">
           <LoadingScreen started={started} onStarted={() => setStart(true)} />
         </div>
-      )}
-
-      {/* 📱 MOBILE UI */}
-      {isMobile && (
-        <>
-          <MobileJoystick config={config} onMove={setJoystick} />
-
-          <InteractButton
-            onInteract={() => {
-              setInteract(true);
-              setTimeout(() => setInteract(false), 100);
-            }}
-          />
-        </>
       )}
     </div>
   );
