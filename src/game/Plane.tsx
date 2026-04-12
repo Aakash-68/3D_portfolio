@@ -23,14 +23,14 @@ interface Props {
   boost?: boolean;
 }
 
+const BASE = (import.meta as any).env.BASE_URL;
 const PLANE_HEIGHT = -11;
-
 const Plane = forwardRef<THREE.Group, Props>(
   ({ config, isLocked = false, joystick, boost }, ref) => {
     const groupRef = useRef<THREE.Group>(null!);
     const meshRef = useRef<THREE.Group>(null!);
 
-    const { scene, animations } = useGLTF("/assets/models/plane.glb");
+    const { scene, animations } = useGLTF(BASE + "/assets/models/plane.glb");
     const { actions } = useAnimations(animations, meshRef);
 
     useEffect(() => {

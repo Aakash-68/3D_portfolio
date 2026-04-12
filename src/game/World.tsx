@@ -14,12 +14,13 @@ interface Props {
 }
 
 export const GLOBE_RADIUS = 50;
+const BASE = (import.meta as any).env.BASE_URL;
 
 export default function World({ config, playerRef, triggerInteract }: Props) {
   const globeRef = useRef<THREE.Group>(null!);
   const visualGlobeRef = useRef<THREE.Group>(null!);
 
-  const { scene, animations } = useGLTF("/assets/models/globe.glb");
+  const { scene, animations } = useGLTF(BASE + "/assets/models/globe.glb");
   const { actions } = useAnimations(animations, visualGlobeRef);
 
   useEffect(() => {

@@ -8,10 +8,11 @@ interface Props {
   targetRef: React.RefObject<THREE.Object3D>;
   triggerInteract?: boolean;
 }
+const BASE = (import.meta as any).env.BASE_URL;
 
 const HITBOXES = [
   {
-    path: "/assets/models/hitBox.glb",
+    path: BASE + "/assets/models/hitBox.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
   },
