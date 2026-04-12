@@ -9,19 +9,19 @@ interface Config {
 
 interface Props {
   config: Config;
-  playerRef: React.RefObject<THREE.Object3D>; // 👈 IMPORTANT
+  playerRef: React.RefObject<THREE.Object3D>;
+  triggerInteract?: boolean;
 }
 
 export const GLOBE_RADIUS = 50;
 
-export default function World({ config, playerRef }: Props) {
+export default function World({ config, playerRef, triggerInteract }: Props) {
   const globeRef = useRef<THREE.Group>(null!);
   const visualGlobeRef = useRef<THREE.Group>(null!);
 
   const { scene, animations } = useGLTF("/src/assets/models/globe.glb");
   const { actions } = useAnimations(animations, visualGlobeRef);
 
-  // Make globe matte
   useEffect(() => {
     scene.traverse((child: any) => {
       if (child.isMesh) {
@@ -38,30 +38,24 @@ export default function World({ config, playerRef }: Props) {
     });
   }, [scene]);
 
-  // Play animations
   useEffect(() => {
     if (actions) {
-      Object.values(actions).forEach((action) => {
-        action?.reset().play();
-      });
+      Object.values(actions).forEach((a) => a?.reset().play());
     }
   }, [actions]);
 
   return (
-    <group ref={globeRef} position={[0, 0, 0]}>
-      {/* Invisible physics globe */}
-      <mesh receiveShadow>
+    <group ref={globeRef}>
+      <mesh>
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
         <meshStandardMaterial transparent opacity={0} />
       </mesh>
 
-      {/* Visual globe */}
       <group ref={visualGlobeRef} scale={32}>
         <primitive object={scene} />
       </group>
 
-      {/* 🔥 Separate Hitbox */}
-      <Hitbox targetRef={playerRef} />
+      <Hitbox targetRef={playerRef} triggerInteract={triggerInteract} />
     </group>
   );
 }

@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
   targetRef: React.RefObject<THREE.Object3D>;
+  triggerInteract?: boolean;
 }
 
-//ALL HITBOXES
 const HITBOXES = [
   {
     path: "/src/assets/models/hitBox.glb",
@@ -17,14 +17,13 @@ const HITBOXES = [
   },
 ];
 
-export default function Hitbox({ targetRef }: Props) {
+export default function Hitbox({ targetRef, triggerInteract }: Props) {
   const groupRefs = useRef<THREE.Group[]>([]);
   const navigate = useNavigate();
   const [inHitbox, setInHitbox] = useState(false);
 
   const scenes = HITBOXES.map((hb) => useGLTF(hb.path).scene);
 
-  // Apply material
   useEffect(() => {
     scenes.forEach((scene) => {
       scene.traverse((child: any) => {
@@ -39,7 +38,6 @@ export default function Hitbox({ targetRef }: Props) {
     });
   }, [scenes]);
 
-  // Collision detection
   useFrame(() => {
     if (!targetRef.current) return;
 
@@ -62,7 +60,14 @@ export default function Hitbox({ targetRef }: Props) {
     setInHitbox(hit);
   });
 
-  // Interaction
+  //mobile trigger
+  useEffect(() => {
+    if (triggerInteract && inHitbox) {
+      navigate("/");
+    }
+  }, [triggerInteract, inHitbox, navigate]);
+
+  //keyboard trigger
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && inHitbox) {

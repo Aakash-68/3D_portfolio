@@ -21,6 +21,7 @@ interface Props {
   isLocked?: boolean;
   joystick?: { x: number; y: number } | null;
   boost?: boolean;
+  onMove: (pos: { x: number; y: number } | null) => void;
 }
 
 const PLANE_HEIGHT = -11;
