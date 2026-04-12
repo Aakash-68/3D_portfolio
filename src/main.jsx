@@ -9,7 +9,7 @@ import Test from './game/Test.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter >
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/t" element={<Test />} />
@@ -17,6 +17,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/home" element={<Home />} />
         <Route path="/fin" element={<Fin />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter >
   </StrictMode>
 );
