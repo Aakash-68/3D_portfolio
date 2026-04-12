@@ -11,7 +11,7 @@ interface Props {
 
 const HITBOXES = [
   {
-    path: "/src/assets/models/hitBox.glb",
+    path: "/assets/models/hitBox.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
   },

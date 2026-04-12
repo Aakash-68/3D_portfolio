@@ -30,7 +30,7 @@ const Plane = forwardRef<THREE.Group, Props>(
     const groupRef = useRef<THREE.Group>(null!);
     const meshRef = useRef<THREE.Group>(null!);
 
-    const { scene, animations } = useGLTF("/src/assets/models/plane.glb");
+    const { scene, animations } = useGLTF("/assets/models/plane.glb");
     const { actions } = useAnimations(animations, meshRef);
 
     useEffect(() => {
