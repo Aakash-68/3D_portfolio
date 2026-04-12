@@ -5,42 +5,64 @@ import { useFrame } from "@react-three/fiber";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-  targetRef: React.RefObject<THREE.Object3D>; // plane or player
-  scale?: number;
+  targetRef: React.RefObject<THREE.Object3D>;
 }
 
-export default function Hitbox({ targetRef, scale = 32 }: Props) {
-  const hitboxRef = useRef<THREE.Group>(null!);
-  const { scene: hitboxScene } = useGLTF("/src/assets/models/hitBox.glb");
+//ALL HITBOXES
+const HITBOXES = [
+  {
+    path: "/src/assets/models/hitBox.glb",
+    position: [0, 0, 0] as [number, number, number],
+    scale: 32,
+  },
+];
 
-  const [inHitbox, setInHitbox] = useState(false);
+export default function Hitbox({ targetRef }: Props) {
+  const groupRefs = useRef<THREE.Group[]>([]);
   const navigate = useNavigate();
+  const [inHitbox, setInHitbox] = useState(false);
 
-  // Configure material
+  const scenes = HITBOXES.map((hb) => useGLTF(hb.path).scene);
+
+  // Apply material
   useEffect(() => {
-    hitboxScene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshBasicMaterial({
-          color: "red",
-          transparent: true,
-          opacity: 0.15,
-        });
-      }
+    scenes.forEach((scene) => {
+      scene.traverse((child: any) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshBasicMaterial({
+            color: "red",
+            transparent: true,
+            opacity: 0.15,
+          });
+        }
+      });
     });
-  }, [hitboxScene]);
+  }, [scenes]);
 
   // Collision detection
   useFrame(() => {
-    if (!hitboxRef.current || !targetRef.current) return;
+    if (!targetRef.current) return;
 
-    const hitboxBox = new THREE.Box3().setFromObject(hitboxRef.current);
     const targetBox = new THREE.Box3().setFromObject(targetRef.current);
 
-    const intersecting = hitboxBox.intersectsBox(targetBox);
-    setInHitbox(intersecting);
+    let hit = false;
+
+    for (let i = 0; i < groupRefs.current.length; i++) {
+      const ref = groupRefs.current[i];
+      if (!ref) continue;
+
+      const box = new THREE.Box3().setFromObject(ref);
+
+      if (box.intersectsBox(targetBox)) {
+        hit = true;
+        break;
+      }
+    }
+
+    setInHitbox(hit);
   });
 
-  // Interaction (press E)
+  // Interaction
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && inHitbox) {
@@ -53,8 +75,19 @@ export default function Hitbox({ targetRef, scale = 32 }: Props) {
   }, [inHitbox, navigate]);
 
   return (
-    <group ref={hitboxRef} scale={scale}>
-      <primitive object={hitboxScene} />
-    </group>
+    <>
+      {HITBOXES.map((hb, index) => (
+        <group
+          key={index}
+          ref={(el) => {
+            if (el) groupRefs.current[index] = el;
+          }}
+          position={hb.position}
+          scale={hb.scale}
+        >
+          <primitive object={scenes[index]} />
+        </group>
+      ))}
+    </>
   );
 }

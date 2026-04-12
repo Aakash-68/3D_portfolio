@@ -61,7 +61,7 @@ export default function World({ config, playerRef }: Props) {
       </group>
 
       {/* 🔥 Separate Hitbox */}
-      <Hitbox targetRef={playerRef} scale={32} />
+      <Hitbox targetRef={playerRef} />
     </group>
   );
 }
