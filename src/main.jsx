@@ -9,7 +9,7 @@ import Test from './game/Test.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename="/3D_portfolio">
+    <BrowserRouter basename="/3D_portfolio/t">
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/t" element={<Test />} />
