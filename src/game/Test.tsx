@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import PlaneGame from "./PlaneGame";
+import MobileJoystick from "../components/MobileJoystick";
+import InteractButton from "../components/InteractButton";
 
 export default function Test() {
-  const [config, setConfig] = useState({
+  const [config] = useState({
     globeRotationSpeed: 0.001,
     forwardSpeed: 0.05,
     slowSpeed: 0.02,
@@ -12,6 +14,12 @@ export default function Test() {
   });
 
   const [isMobile, setIsMobile] = useState(false);
+  const [joystick, setJoystick] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+
+  // triggerInteract is a pulse: true for one render cycle, then resets
+  const [triggerInteract, setTriggerInteract] = useState(false);
 
   useEffect(() => {
     const check = () =>
@@ -19,41 +27,34 @@ export default function Test() {
     check();
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "1")
-        setConfig((prev) => ({ ...prev, cameraMode: "follow" }));
-      if (e.key === "2") setConfig((prev) => ({ ...prev, cameraMode: "dev" }));
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+  const handleInteract = useCallback(() => {
+    setTriggerInteract(true);
+    // reset after a short delay so Hitbox picks up the rising edge
+    setTimeout(() => setTriggerInteract(false), 100);
   }, []);
 
   return (
     <div className="w-full h-screen relative overflow-hidden bg-sky-300">
-      <PlaneGame config={config} />
+      <PlaneGame
+        config={config}
+        joystick={joystick}
+        triggerInteract={triggerInteract}
+      />
 
-      <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-        <button
-          onClick={() =>
-            setConfig((prev) => ({
-              ...prev,
-              cameraMode: prev.cameraMode === "follow" ? "dev" : "follow",
-            }))
-          }
-          className="px-4 py-2 bg-white/80 backdrop-blur-md rounded-lg shadow-sm"
-        >
-          Camera: {config.cameraMode === "follow" ? "Third Person" : "Dev Mode"}
-        </button>
+      {/* Mobile-only overlay controls */}
+      {isMobile && (
+        <>
+          <MobileJoystick onMove={setJoystick} />
+          <InteractButton onInteract={handleInteract} />
+        </>
+      )}
 
-        <div className="text-xs bg-white/50 p-2 rounded-lg">
-          {isMobile ? (
-            <>Mobile Controls Joystick → steer E → interact</>
-          ) : (
-            <>Keyboard Controls WASD → fly 1 / 2 → camera E → interact</>
-          )}
+      {/* Keyboard hint for desktop */}
+      {!isMobile && (
+        <div className="absolute top-4 left-4 z-10 text-xs bg-white/50 backdrop-blur-sm px-3 py-2 rounded-lg">
+          WASD → fly &nbsp;·&nbsp; E → interact &nbsp;·&nbsp; 1 / 2 → camera
         </div>
-      </div>
+      )}
     </div>
   );
 }

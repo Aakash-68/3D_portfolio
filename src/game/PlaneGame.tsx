@@ -20,6 +20,8 @@ interface Config {
 
 interface Props {
   config: Config;
+  joystick?: { x: number; y: number } | null;
+  triggerInteract?: boolean;
 }
 
 function CameraLight() {
@@ -28,15 +30,11 @@ function CameraLight() {
 
   useFrame(({ camera }) => {
     if (!lightRef.current) return;
-
     lightRef.current.position.copy(camera.position);
-
     const forward = new THREE.Vector3(0, 0, -1)
       .applyQuaternion(camera.quaternion)
       .multiplyScalar(200);
-
     targetRef.current.position.copy(camera.position).add(forward);
-
     lightRef.current.target = targetRef.current;
     targetRef.current.updateMatrixWorld();
   });
@@ -49,7 +47,11 @@ function CameraLight() {
   );
 }
 
-export default function PlaneGame({ config }: Props) {
+export default function PlaneGame({
+  config,
+  joystick,
+  triggerInteract,
+}: Props) {
   const planeRef = useRef<THREE.Group>(null!);
   const [started, setStart] = useState(false);
 
@@ -68,13 +70,16 @@ export default function PlaneGame({ config }: Props) {
           <Environment preset="sunset" environmentIntensity={0.3} />
           <CameraLight />
           <ambientLight intensity={1} />
-          <Plane ref={planeRef} config={config} />
-          <World config={config} playerRef={planeRef} />{" "}
+          <Plane ref={planeRef} config={config} joystick={joystick} />
+          <World
+            config={config}
+            playerRef={planeRef}
+            triggerInteract={triggerInteract}
+          />
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
         </Suspense>
       </Canvas>
 
-      {/* Loading Screen Overlay */}
       {!started && (
         <div className="absolute inset-0 z-50">
           <LoadingScreen started={started} onStarted={() => setStart(true)} />

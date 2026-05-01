@@ -1,169 +1,165 @@
-import React, {
-  useRef,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
-import { useFrame } from "@react-three/fiber";
-import { useGLTF, useAnimations } from "@react-three/drei";
-import * as THREE from "three";
-import { GLOBE_RADIUS } from "../game/World";
+import React, { useRef, useCallback, useEffect } from "react";
 
-interface Config {
-  forwardSpeed: number;
-  slowSpeed: number;
-  turnAmount: number;
-  rollAmount: number;
+interface JoystickOutput {
+  x: number; // -1 to 1
+  y: number; // -1 to 1
 }
 
 interface Props {
-  config: Config;
-  isLocked?: boolean;
-  joystick?: { x: number; y: number } | null;
-  boost?: boolean;
-  onMove: (pos: { x: number; y: number } | null) => void;
+  onMove: (value: JoystickOutput | null) => void;
 }
 
-const PLANE_HEIGHT = -11;
+const RADIUS = 56; // outer radius px
+const KNOB = 22; // inner knob radius px
 
-const Plane = forwardRef<THREE.Group, Props>(
-  ({ config, isLocked = false, joystick, boost }, ref) => {
-    const groupRef = useRef<THREE.Group>(null!);
-    const meshRef = useRef<THREE.Group>(null!);
+export default function MobileJoystick({ onMove }: Props) {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const knobRef = useRef<HTMLDivElement>(null);
+  const activeTouch = useRef<number | null>(null);
+  const centerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-    const { scene, animations } = useGLTF("/src/assets/models/plane.glb");
-    const { actions } = useAnimations(animations, meshRef);
+  const updateKnob = useCallback(
+    (clientX: number, clientY: number) => {
+      const cx = centerRef.current.x;
+      const cy = centerRef.current.y;
 
-    useEffect(() => {
-      scene.traverse((child: any) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
+      const dx = clientX - cx;
+      const dy = clientY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const clamped = Math.min(dist, RADIUS);
+      const angle = Math.atan2(dy, dx);
 
-          if (child.material) {
-            child.material.metalness = 0;
-            child.material.roughness = 1;
-            child.material.envMapIntensity = 0;
-            child.material.needsUpdate = true;
-          }
-        }
+      const kx = Math.cos(angle) * clamped;
+      const ky = Math.sin(angle) * clamped;
+
+      if (knobRef.current) {
+        knobRef.current.style.transform = `translate(${kx}px, ${ky}px)`;
+      }
+
+      onMove({
+        x: kx / RADIUS,
+        y: ky / RADIUS,
       });
-    }, [scene]);
+    },
+    [onMove],
+  );
 
-    useImperativeHandle(ref, () => groupRef.current);
+  const resetKnob = useCallback(() => {
+    if (knobRef.current) {
+      knobRef.current.style.transform = "translate(0px, 0px)";
+    }
+    onMove(null);
+    activeTouch.current = null;
+  }, [onMove]);
 
-    const keys = useRef<{ [key: string]: boolean }>({});
+  useEffect(() => {
+    const el = outerRef.current;
+    if (!el) return;
 
-    useEffect(() => {
-      const down = (e: KeyboardEvent) => (keys.current[e.code] = true);
-      const up = (e: KeyboardEvent) => (keys.current[e.code] = false);
-
-      window.addEventListener("keydown", down);
-      window.addEventListener("keyup", up);
-
-      return () => {
-        window.removeEventListener("keydown", down);
-        window.removeEventListener("keyup", up);
+    const onTouchStart = (e: TouchEvent) => {
+      if (activeTouch.current !== null) return;
+      const touch = e.changedTouches[0];
+      activeTouch.current = touch.identifier;
+      const rect = el.getBoundingClientRect();
+      centerRef.current = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
       };
-    }, []);
+      updateKnob(touch.clientX, touch.clientY);
+    };
 
-    useEffect(() => {
-      if (actions) {
-        Object.values(actions).forEach((a) => a?.reset().play());
+    const onTouchMove = (e: TouchEvent) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        if (touch.identifier === activeTouch.current) {
+          updateKnob(touch.clientX, touch.clientY);
+          break;
+        }
       }
-    }, [actions]);
+    };
 
-    const orientation = useRef(new THREE.Quaternion());
-    const currentRoll = useRef(0);
-    const currentTurn = useRef(0);
-    const currentSpeed = useRef(0);
-
-    useFrame((_, delta) => {
-      if (!groupRef.current || isLocked) return;
-
-      const jx = joystick?.x ?? 0;
-      const jy = joystick?.y ?? 0;
-
-      const isForward = joystick ? jy < -0.2 : keys.current["KeyW"];
-      const isSlow = joystick ? jy > 0.2 : keys.current["KeyS"];
-      const isLeft = joystick ? jx < -0.2 : keys.current["KeyA"];
-      const isRight = joystick ? jx > 0.2 : keys.current["KeyD"];
-
-      const baseSpeed = 0.45;
-      let targetSpeed = baseSpeed;
-
-      if (joystick) {
-        targetSpeed = baseSpeed * (1 + -jy); // analog forward/back
-      } else {
-        if (boost) targetSpeed = baseSpeed * 1.8;
-        else if (isSlow) targetSpeed = baseSpeed * 0.15;
-        else if (!isForward) targetSpeed = baseSpeed * 0.35;
+    const onTouchEnd = (e: TouchEvent) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === activeTouch.current) {
+          resetKnob();
+          break;
+        }
       }
+    };
 
-      currentSpeed.current = THREE.MathUtils.lerp(
-        currentSpeed.current,
-        targetSpeed,
-        0.05,
-      );
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
-      let targetTurn = 0;
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [updateKnob, resetKnob]);
 
-      if (joystick) {
-        targetTurn = -jx * config.turnAmount;
-      } else {
-        if (isLeft) targetTurn = config.turnAmount;
-        if (isRight) targetTurn = -config.turnAmount;
-      }
+  return (
+    <div
+      ref={outerRef}
+      style={{
+        position: "absolute",
+        bottom: 48,
+        left: 48,
+        width: RADIUS * 2,
+        height: RADIUS * 2,
+        borderRadius: "50%",
+        background: "rgba(255,255,255,0.10)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        border: "1.5px solid rgba(255,255,255,0.28)",
+        boxShadow: "0 4px 32px rgba(0,0,0,0.18)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        touchAction: "none",
+        userSelect: "none",
+        zIndex: 20,
+      }}
+    >
+      {/* crosshair guides */}
+      <div
+        style={{
+          position: "absolute",
+          width: "60%",
+          height: 1,
+          background: "rgba(255,255,255,0.15)",
+          borderRadius: 1,
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          width: 1,
+          height: "60%",
+          background: "rgba(255,255,255,0.15)",
+          borderRadius: 1,
+        }}
+      />
 
-      currentTurn.current = THREE.MathUtils.lerp(
-        currentTurn.current,
-        targetTurn,
-        0.08,
-      );
-
-      const targetRoll = targetTurn * 2 * 10 * -1;
-
-      currentRoll.current = THREE.MathUtils.lerp(
-        currentRoll.current,
-        targetRoll,
-        0.05,
-      );
-
-      const turnQuat = new THREE.Quaternion().setFromAxisAngle(
-        new THREE.Vector3(0, 1, 0),
-        currentTurn.current,
-      );
-      orientation.current.multiply(turnQuat);
-
-      const forwardQuat = new THREE.Quaternion().setFromAxisAngle(
-        new THREE.Vector3(1, 0, 0),
-        currentSpeed.current / GLOBE_RADIUS,
-      );
-      orientation.current.multiply(forwardQuat);
-
-      groupRef.current.quaternion.copy(orientation.current);
-
-      const up = new THREE.Vector3(0, 1, 0).applyQuaternion(
-        orientation.current,
-      );
-
-      groupRef.current.position.copy(
-        up.multiplyScalar(GLOBE_RADIUS + PLANE_HEIGHT),
-      );
-
-      if (meshRef.current) {
-        meshRef.current.rotation.z = currentRoll.current;
-      }
-    });
-
-    return (
-      <group ref={groupRef}>
-        <group ref={meshRef} scale={0.3}>
-          <primitive object={scene} />
-        </group>
-      </group>
-    );
-  },
-);
-
-export default Plane;
+      {/* knob */}
+      <div
+        ref={knobRef}
+        style={{
+          width: KNOB * 2,
+          height: KNOB * 2,
+          borderRadius: "50%",
+          background: "rgba(255,255,255,0.55)",
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
+          border: "1.5px solid rgba(255,255,255,0.7)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.18)",
+          transition: "transform 0.05s ease",
+          pointerEvents: "none",
+          flexShrink: 0,
+        }}
+      />
+    </div>
+  );
+}

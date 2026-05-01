@@ -9,26 +9,26 @@ interface Config {
 
 interface Props {
   config: Config;
-  playerRef: React.RefObject<THREE.Object3D>; // 👈 IMPORTANT
+  playerRef: React.RefObject<THREE.Object3D>;
+  triggerInteract?: boolean; // forwarded from mobile E button
 }
 
 export const GLOBE_RADIUS = 50;
 
 const BASE = (import.meta as any).env.BASE_URL;
-export default function World({ config, playerRef }: Props) {
+
+export default function World({ config, playerRef, triggerInteract }: Props) {
   const globeRef = useRef<THREE.Group>(null!);
   const visualGlobeRef = useRef<THREE.Group>(null!);
 
   const { scene, animations } = useGLTF(BASE + "/assets/models/globe.glb");
   const { actions } = useAnimations(animations, visualGlobeRef);
 
-  // Make globe matte
   useEffect(() => {
     scene.traverse((child: any) => {
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
-
         if (child.material) {
           child.material.metalness = 0;
           child.material.roughness = 1;
@@ -39,7 +39,6 @@ export default function World({ config, playerRef }: Props) {
     });
   }, [scene]);
 
-  // Play animations
   useEffect(() => {
     if (actions) {
       Object.values(actions).forEach((action) => {
@@ -61,7 +60,7 @@ export default function World({ config, playerRef }: Props) {
         <primitive object={scene} />
       </group>
 
-      <Hitbox targetRef={playerRef} />
+      <Hitbox targetRef={playerRef} triggerInteract={triggerInteract} />
     </group>
   );
 }
