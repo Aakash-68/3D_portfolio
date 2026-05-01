@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
@@ -8,6 +8,7 @@ interface Props {
   targetRef: React.RefObject<THREE.Object3D>;
   triggerInteract?: boolean;
 }
+
 const BASE = (import.meta as any).env.BASE_URL;
 
 const HITBOXES = [
@@ -21,7 +22,10 @@ const HITBOXES = [
 export default function Hitbox({ targetRef, triggerInteract }: Props) {
   const groupRefs = useRef<THREE.Group[]>([]);
   const navigate = useNavigate();
-  const [inHitbox, setInHitbox] = useState(false);
+
+  const raycaster = useRef(new THREE.Raycaster());
+  const direction = useRef(new THREE.Vector3());
+  const origin = useRef(new THREE.Vector3());
 
   const scenes = HITBOXES.map((hb) => useGLTF(hb.path).scene);
 
@@ -34,51 +38,86 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
             transparent: true,
             opacity: 0.15,
           });
+          child.userData.raycastable = true; // mark for clarity
         }
       });
     });
   }, [scenes]);
 
+  let inHitboxRef = useRef(false);
+
   useFrame(() => {
     if (!targetRef.current) return;
 
-    const targetBox = new THREE.Box3().setFromObject(targetRef.current);
+    const origin = new THREE.Vector3();
+    const forward = new THREE.Vector3();
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3();
+
+    targetRef.current.getWorldPosition(origin);
+    targetRef.current.getWorldDirection(forward);
+
+    // build right & up vectors from forward
+    right.crossVectors(forward, targetRef.current.up).normalize();
+    up.copy(targetRef.current.up).normalize();
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.far = 5;
+
+    const directions = [
+      forward.clone(), // front
+      forward.clone().add(right.clone().multiplyScalar(0.5)), // front-right
+      forward.clone().add(right.clone().multiplyScalar(-0.5)), // front-left
+      forward.clone().add(up.clone().multiplyScalar(0.4)), // up
+      forward.clone().add(up.clone().multiplyScalar(-0.4)), // down
+    ];
+
+    const meshes: THREE.Mesh[] = [];
+
+    groupRefs.current.forEach((group) => {
+      if (!group) return;
+      group.traverse((child: any) => {
+        if (child.isMesh) meshes.push(child);
+      });
+    });
 
     let hit = false;
 
-    for (let i = 0; i < groupRefs.current.length; i++) {
-      const ref = groupRefs.current[i];
-      if (!ref) continue;
+    for (const dir of directions) {
+      raycaster.set(origin, dir.normalize());
 
-      const box = new THREE.Box3().setFromObject(ref);
+      const hits = raycaster.intersectObjects(meshes, true);
 
-      if (box.intersectsBox(targetBox)) {
+      if (hits.length > 0) {
         hit = true;
         break;
       }
     }
 
-    setInHitbox(hit);
-  });
+    inHitboxRef.current = hit;
 
-  //mobile trigger
+    if (hit) {
+      console.log("multi-ray hit");
+    }
+  });
+  // mobile trigger
   useEffect(() => {
-    if (triggerInteract && inHitbox) {
+    if (triggerInteract && inHitboxRef.current) {
       navigate("/");
     }
-  }, [triggerInteract, inHitbox, navigate]);
+  }, [triggerInteract, navigate]);
 
-  //keyboard trigger
+  // keyboard trigger
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "e" && inHitbox) {
+      if (e.key.toLowerCase() === "e" && inHitboxRef.current) {
         navigate("/");
       }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [inHitbox, navigate]);
+  }, []);
 
   return (
     <>
