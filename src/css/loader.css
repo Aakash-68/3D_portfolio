@@ -1,3 +1,13 @@
+.delay1 {
+  animation-delay: 0s;
+}
+.delay2 {
+  animation-delay: 0.5s;
+}
+.delay3 {
+  animation-delay: 1s;
+}
+
 .loader {
   position: relative;
   width: 200px;
@@ -16,19 +26,17 @@
   animation: floatPlane 1s ease-in-out infinite;
 }
 
-/* Clouds */
+/* Clouds base */
 .clouds {
   position: absolute;
-  right: -40px; 
+  right: -40px;
   width: 40px;
-  opacity: 0.8;
 }
 
 /* Back clouds (slower, further away) */
 .clouds--back {
   animation: moveCloudsBack 8s linear infinite;
   top: 50px;
-  opacity: 0.5;
   z-index: 0;
 }
 
@@ -37,37 +45,61 @@
   animation: moveCloudsFront 5s linear infinite;
   bottom: 35px;
   z-index: 1;
-  opacity: 0.9;
 }
 
-/* Plane floating up/down */
+/* Plane floating */
 @keyframes floatPlane {
   0% {
     transform: translateY(1px) rotate(0deg);
+    opacity: 0.95;
   }
   50% {
-    transform: translateY(-1px) rotate(-0.5deg);
+    transform: translateY(-2px) rotate(-0.5deg);
+    opacity: 1;
   }
   100% {
     transform: translateY(1px) rotate(0deg);
+    opacity: 0.95;
   }
 }
 
+/* Back clouds */
 /* Cloud movement (parallax effect) */
 @keyframes moveCloudsBack {
-  from {
+  0% {
     transform: translateX(0);
+    opacity: 0;
   }
-  to {
+  25% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
     transform: translateX(-250px);
+    opacity: 0;
   }
 }
-
 @keyframes moveCloudsFront {
-  from {
+  0% {
     transform: translateX(0);
+    opacity: 0;
   }
-  to {
+  25% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
     transform: translateX(-200px);
+    opacity: 0;
   }
 }
