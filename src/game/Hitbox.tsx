@@ -49,9 +49,13 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
 
   const inHitboxRef = useRef(false);
 
-  // precomputed sphere (NO ALLOCATION IN LOOP)
+  // Preallocated — never allocate inside useFrame
   const targetSphere = useRef(new THREE.Sphere());
   const tempVec = new THREE.Vector3();
+  const tempBox = useRef(new THREE.Box3());
+  const tempSphere = useRef(new THREE.Sphere());
+  const tempMatrix = useRef(new THREE.Matrix4());
+  const localSphere = useRef(new THREE.Sphere());
 
   // BUILD BVH ONCE
   useEffect(() => {
@@ -62,6 +66,10 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
             color: "red",
             transparent: true,
             opacity: 0,
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: 1,
+            polygonOffsetUnits: 1,
           });
 
           if (!child.geometry.boundsTree) {
@@ -72,48 +80,41 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
     });
   }, [scenes]);
 
-  // STABLE FRAME LOOP
   useFrame(() => {
     if (!targetRef.current) return;
 
     const target = targetRef.current;
     target.updateWorldMatrix(true, false);
 
-    // STEP 1: FAST BROAD PHASE
-
     target.getWorldPosition(tempVec);
-
     targetSphere.current.center.copy(tempVec);
-    targetSphere.current.radius = 8; // tune this to plane size
+    targetSphere.current.radius = 8;
 
     let inside = false;
-
-    // STEP 2: HITBOX CHECK
 
     for (const group of groupRefs.current) {
       if (!group) continue;
 
       group.updateWorldMatrix(true, true);
 
-      // cheap bounding sphere per group
-      const groupBox = new THREE.Box3().setFromObject(group);
-      const groupSphere = groupBox.getBoundingSphere(new THREE.Sphere());
+      // Reuse preallocated Box3 and Sphere for broad phase
+      tempBox.current.setFromObject(group);
+      tempBox.current.getBoundingSphere(tempSphere.current);
 
-      // quick reject (VERY IMPORTANT)
-      if (!targetSphere.current.intersectsSphere(groupSphere)) continue;
+      // Quick reject
+      if (!targetSphere.current.intersectsSphere(tempSphere.current)) continue;
 
-      // STEP 3: BVH CONFIRMATION
+      // BVH confirmation — reuse matrix and sphere
       group.traverse((child: any) => {
         if (!child.isMesh || !child.geometry?.boundsTree) return;
 
         const bvh = child.geometry.boundsTree;
 
-        const invMatrix = new THREE.Matrix4().copy(child.matrixWorld).invert();
+        tempMatrix.current.copy(child.matrixWorld).invert();
+        localSphere.current.copy(targetSphere.current);
+        localSphere.current.applyMatrix4(tempMatrix.current);
 
-        const localSphere = targetSphere.current.clone();
-        localSphere.applyMatrix4(invMatrix);
-
-        if (bvh.intersectsSphere(localSphere)) {
+        if (bvh.intersectsSphere(localSphere.current)) {
           inside = true;
         }
       });
@@ -125,19 +126,19 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
 
     if (inside) {
       PLANE_CONFIG.SPEEDS.IDLE = 0.15;
-      //console.log("INSIDE HITBOX");
     } else {
       PLANE_CONFIG.SPEEDS.IDLE = 0.45;
     }
   });
 
-  // TRIGGERS
+  // Trigger from mobile button
   useEffect(() => {
     if (triggerInteract && inHitboxRef.current) {
       navigate("/");
     }
   }, [triggerInteract, navigate]);
 
+  // Trigger from keyboard
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "e" && inHitboxRef.current) {
@@ -149,7 +150,6 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  // RENDER
   return (
     <>
       {HITBOXES.map((hb, index) => (

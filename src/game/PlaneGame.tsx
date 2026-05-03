@@ -8,6 +8,7 @@ import World from "./World";
 import CameraHandler from "./CameraHandler";
 import StableSky from "./StableSky";
 import { LoadingScreen } from "../components/LoadingScreen";
+import Words from "./Words";
 
 interface Config {
   globeRotationSpeed: number;
@@ -59,9 +60,11 @@ export default function PlaneGame({
     <div className="w-full h-full relative">
       <Canvas
         shadows={false}
+        camera={{ near: 0.1, far: 10000, fov: 75 }}
         gl={{
           toneMapping: THREE.ACESFilmicToneMapping,
           outputColorSpace: THREE.SRGBColorSpace,
+          logarithmicDepthBuffer: true,
         }}
         className="w-full h-full"
       >
@@ -76,6 +79,7 @@ export default function PlaneGame({
             playerRef={planeRef}
             triggerInteract={triggerInteract}
           />
+          <Words />
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
         </Suspense>
       </Canvas>

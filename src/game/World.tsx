@@ -49,12 +49,6 @@ export default function World({ config, playerRef, triggerInteract }: Props) {
 
   return (
     <group ref={globeRef} position={[0, 0, 0]}>
-      {/* Invisible physics globe */}
-      <mesh receiveShadow>
-        <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
-        <meshStandardMaterial transparent opacity={0} />
-      </mesh>
-
       {/* Visual globe */}
       <group ref={visualGlobeRef} scale={32}>
         <primitive object={scene} />

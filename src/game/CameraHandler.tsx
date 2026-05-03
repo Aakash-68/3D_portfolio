@@ -10,15 +10,19 @@ interface Props {
 
 export default function CameraHandler({ planeRef, mode }: Props) {
   const { camera } = useThree();
-  const followCamRef = useRef<THREE.PerspectiveCamera>(null!);
 
-  // Follow camera settings (inspired by the C# script)
+  // Follow camera settings
   const offset = new THREE.Vector3(0, 7.5, -6); // Behind and above
   const lookAtOffset = new THREE.Vector3(0, 0, 2); // Look slightly ahead
 
   useFrame((state, delta) => {
     if (mode === "follow" && planeRef.current) {
       const plane = planeRef.current;
+
+      // Fix near/far every frame to prevent clipping
+      camera.near = 0.1;
+      camera.far = 10000;
+      camera.updateProjectionMatrix();
 
       // Calculate world position for camera
       const idealOffset = offset.clone().applyQuaternion(plane.quaternion);
@@ -56,6 +60,8 @@ export default function CameraHandler({ planeRef, mode }: Props) {
         makeDefault={mode === "follow"}
         position={[0, 15, 20]}
         fov={75}
+        near={0.1}
+        far={10000}
       />
     </>
   );
