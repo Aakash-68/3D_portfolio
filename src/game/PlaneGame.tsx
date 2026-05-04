@@ -9,6 +9,7 @@ import CameraHandler from "./CameraHandler";
 import StableSky from "./StableSky";
 import { LoadingScreen } from "../components/LoadingScreen";
 import Words from "./Words";
+import MiniMap from "./MiniMap";
 
 interface Config {
   globeRotationSpeed: number;
@@ -83,6 +84,7 @@ export default function PlaneGame({
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
         </Suspense>
       </Canvas>
+      <MiniMap planeRef={planeRef} />
 
       {!started && (
         <div className="absolute inset-0 z-50">

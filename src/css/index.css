@@ -1,30 +1,19 @@
 @font-face {
-  font-family: 'gd';
-  src: url('../assets/fonts/gd.otf');
-  
-  font-family: 's';
-  src: url('../assets/fonts/s.otf');
+  font-family: "ClashDisplay";
+  src: url("/assets/fonts/ClashDisplay-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "gd";
+  src: url("/assets/fonts/gd.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "s";
+  src: url("/assets/fonts/s.otf") format("opentype");
 }
 
 @import "tailwindcss";
-
-@theme{
-    --font-gd: gd, "sars-serif";
-    --font-s: s, "sars-serif";
-
-}
-
-@keyframes dot {
-  0%, 20% { opacity: 0; }
-  30%, 70% { opacity: 1; }
-  80%, 100% { opacity: 0; }
-}
-
-.dot {
-  opacity: 0;
-  animation: dot 6s infinite ease-in-out;
-}
-
-.dot:nth-child(1) { animation-delay: 0s; }
-.dot:nth-child(2) { animation-delay: 1s; }
-.dot:nth-child(3) { animation-delay: 2s; }

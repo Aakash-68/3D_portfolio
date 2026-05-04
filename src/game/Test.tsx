@@ -4,6 +4,13 @@ import MobileJoystick from "../components/MobileJoystick";
 import InteractButton from "../components/InteractButton";
 import BoostButton from "../components/BoostButton";
 
+// ── Nav items
+const NAV_ITEMS = [
+  { label: "About", fontSize: "12px", fontWeight: 400 },
+  { label: "Projects", fontSize: "12px", fontWeight: 400 },
+  { label: "Contact", fontSize: "12px", fontWeight: 400 },
+];
+
 export default function Test() {
   const [config] = useState({
     globeRotationSpeed: 0.001,
@@ -11,15 +18,13 @@ export default function Test() {
     slowSpeed: 0.02,
     turnAmount: 0.03,
     rollAmount: 0.5,
-    cameraMode: "follow" as "follow" | "dev",
+    cameraMode: "dev" as "follow" | "dev",
   });
 
   const [isMobile, setIsMobile] = useState(false);
   const [joystick, setJoystick] = useState<{ x: number; y: number } | null>(
     null,
   );
-
-  // triggerInteract is a pulse: true for one render cycle, then resets
   const [triggerInteract, setTriggerInteract] = useState(false);
 
   useEffect(() => {
@@ -30,19 +35,19 @@ export default function Test() {
 
   const handleInteract = useCallback(() => {
     setTriggerInteract(true);
-    // reset after a short delay so Hitbox picks up the rising edge
     setTimeout(() => setTriggerInteract(false), 100);
   }, []);
 
   return (
     <div className="w-full h-screen relative overflow-hidden bg-sky-300">
+      {/* ── 3D game canvas ─────────────────────────────────────────── */}
       <PlaneGame
         config={config}
         joystick={joystick}
         triggerInteract={triggerInteract}
       />
 
-      {/* Mobile-only overlay controls */}
+      {/* ── Mobile controls ────────────────────────────────────────── */}
       {isMobile && (
         <>
           <MobileJoystick onMove={setJoystick} />
@@ -51,7 +56,7 @@ export default function Test() {
         </>
       )}
 
-      {/* Keyboard hint for desktop */}
+      {/* ── Desktop hint ───────────────────────────────────────────── */}
       {!isMobile && (
         <div className="absolute top-4 left-4 z-10 text-xs bg-white/50 backdrop-blur-sm px-3 py-2 rounded-lg">
           WASD → fly &nbsp;·&nbsp; E → interact &nbsp;·&nbsp; 1 / 2 → camera

@@ -1,7 +1,14 @@
 @import "tailwindcss";
 @font-face {
-  font-family: 'Scholar';
-  src: url('./assets/fonts/scholar-regular.otf') format('opentype');
+  font-family: "Scholar";
+  src: url("./assets/fonts/scholar-regular.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
+}
+@font-face {
+  font-family: "ClashDisplay";
+  src: url("/assets/fonts/ClashDisplay-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
 }

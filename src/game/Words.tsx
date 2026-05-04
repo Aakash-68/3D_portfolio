@@ -46,6 +46,9 @@ export default function Words() {
             child.material.polygonOffsetFactor = -1;
             child.material.polygonOffsetUnits = -1;
             child.material.needsUpdate = true;
+
+            child.material.transparent = true;
+            child.material.opacity = 0;
           }
         }
       });
