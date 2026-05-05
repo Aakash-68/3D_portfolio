@@ -18,7 +18,7 @@ export default function Test() {
     slowSpeed: 0.02,
     turnAmount: 0.03,
     rollAmount: 0.5,
-    cameraMode: "dev" as "follow" | "dev",
+    cameraMode: "follow" as "follow" | "dev",
   });
 
   const [isMobile, setIsMobile] = useState(false);

@@ -1,3 +1,4 @@
+// src/game/PlaneGame.tsx
 import React, { Suspense, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
@@ -7,9 +8,9 @@ import Plane from "./Plane";
 import World from "./World";
 import CameraHandler from "./CameraHandler";
 import StableSky from "./StableSky";
-import { LoadingScreen } from "../components/LoadingScreen";
 import Words from "./Words";
-import MiniMap from "./MiniMap";
+import { LoadingScreen } from "../components/LoadingScreen";
+import PipCameraPanel from "./PIPcameraPanel";
 
 interface Config {
   globeRotationSpeed: number;
@@ -26,6 +27,7 @@ interface Props {
   triggerInteract?: boolean;
 }
 
+// ── Directional light that tracks the camera position ────────────────────────
 function CameraLight() {
   const lightRef = useRef<THREE.DirectionalLight>(null!);
   const targetRef = useRef<THREE.Object3D>(new THREE.Object3D());
@@ -49,6 +51,7 @@ function CameraLight() {
   );
 }
 
+// ── Main game component ───────────────────────────────────────────────────────
 export default function PlaneGame({
   config,
   joystick,
@@ -59,6 +62,7 @@ export default function PlaneGame({
 
   return (
     <div className="w-full h-full relative">
+      {/* ── Primary 3-D canvas ─────────────────────────────────────────────── */}
       <Canvas
         shadows={false}
         camera={{ near: 0.1, far: 10000, fov: 75 }}
@@ -84,8 +88,11 @@ export default function PlaneGame({
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
         </Suspense>
       </Canvas>
-      <MiniMap planeRef={planeRef} />
 
+      {/* ── HUD overlays ───────────────────────────────────────────────────── */}
+      <PipCameraPanel planeRef={planeRef} />
+
+      {/* ── Loading screen ─────────────────────────────────────────────────── */}
       {!started && (
         <div className="absolute inset-0 z-50">
           <LoadingScreen started={started} onStarted={() => setStart(true)} />
