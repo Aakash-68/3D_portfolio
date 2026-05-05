@@ -10,16 +10,19 @@ const WORDS = [
     path: BASE + "/assets/models/Word/Contact.glb",
     position: [0, 0, 0] as any,
     scale: 32,
+    rotation: [0, 0, 0] as [number, number, number],
   },
   {
     path: BASE + "/assets/models/Word/About.glb",
     position: [0, 0, 0] as any,
     scale: 32,
+    rotation: [0, 0, 0] as [number, number, number],
   },
   {
     path: BASE + "/assets/models/Word/project.glb",
     position: [0, 0, 0] as any,
     scale: 32,
+    rotation: [0, 0, 0] as [number, number, number],
   },
 ];
 
@@ -48,7 +51,7 @@ export default function Words() {
             child.material.needsUpdate = true;
 
             child.material.transparent = true;
-            child.material.opacity = 0;
+            child.material.opacity = 1;
           }
         }
       });
@@ -76,6 +79,7 @@ export default function Words() {
           }}
           position={hb.position}
           scale={hb.scale}
+          rotation={hb.rotation}
         >
           <primitive object={scenes[index]} />
         </group>

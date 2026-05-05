@@ -10,14 +10,20 @@ interface Config {
 interface Props {
   config: Config;
   playerRef: React.RefObject<THREE.Object3D>;
-  triggerInteract?: boolean; // forwarded from mobile E button
+  triggerInteract?: boolean;
+  onHitboxStateChange?: (insideIndex: number) => void;
 }
 
 export const GLOBE_RADIUS = 50;
 
 const BASE = (import.meta as any).env.BASE_URL;
 
-export default function World({ config, playerRef, triggerInteract }: Props) {
+export default function World({
+  config,
+  playerRef,
+  triggerInteract,
+  onHitboxStateChange,
+}: Props) {
   const globeRef = useRef<THREE.Group>(null!);
   const visualGlobeRef = useRef<THREE.Group>(null!);
 
@@ -54,7 +60,11 @@ export default function World({ config, playerRef, triggerInteract }: Props) {
         <primitive object={scene} />
       </group>
 
-      <Hitbox targetRef={playerRef} triggerInteract={triggerInteract} />
+      <Hitbox
+        targetRef={playerRef}
+        triggerInteract={triggerInteract}
+        onHitboxStateChange={onHitboxStateChange}
+      />
     </group>
   );
 }

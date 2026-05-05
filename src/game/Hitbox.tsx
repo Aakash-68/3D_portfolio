@@ -19,35 +19,47 @@ THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree as any;
 interface Props {
   targetRef: React.RefObject<THREE.Object3D>;
   triggerInteract?: boolean;
+  /** Called every frame with the index of the hitbox the plane is inside (-1 = none) */
+  onHitboxStateChange?: (insideIndex: number) => void;
 }
 
 const BASE = (import.meta as any).env.BASE_URL;
 
-const HITBOXES = [
+export const HITBOXES = [
   {
     path: BASE + "/assets/models/hitbox/c_outer.glb",
-    position: [0, 0, 0] as any,
+    position: [0, 0, 0] as [number, number, number],
     scale: 32,
+    label: "Contact",
+    route: "/contact",
   },
   {
     path: BASE + "/assets/models/hitbox/d_outer.glb",
-    position: [0, 0, 0] as any,
+    position: [0, 0, 0] as [number, number, number],
     scale: 32,
+    label: "About",
+    route: "/about",
   },
   {
     path: BASE + "/assets/models/hitbox/i_outer.glb",
-    position: [0, 0, 0] as any,
+    position: [0, 0, 0] as [number, number, number],
     scale: 32,
+    label: "Projects",
+    route: "/projects",
   },
 ];
 
-export default function Hitbox({ targetRef, triggerInteract }: Props) {
+export default function Hitbox({
+  targetRef,
+  triggerInteract,
+  onHitboxStateChange,
+}: Props) {
   const groupRefs = useRef<THREE.Group[]>([]);
   const navigate = useNavigate();
 
   const scenes = HITBOXES.map((hb) => useGLTF(hb.path).scene);
 
-  const inHitboxRef = useRef(false);
+  const inHitboxRef = useRef(-1); // -1 = none, 0/1/2 = index
 
   // Preallocated — never allocate inside useFrame
   const targetSphere = useRef(new THREE.Sphere());
@@ -90,21 +102,19 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
     targetSphere.current.center.copy(tempVec);
     targetSphere.current.radius = 8;
 
-    let inside = false;
+    let insideIndex = -1;
 
-    for (const group of groupRefs.current) {
+    for (let gi = 0; gi < groupRefs.current.length; gi++) {
+      const group = groupRefs.current[gi];
       if (!group) continue;
 
       group.updateWorldMatrix(true, true);
 
-      // Reuse preallocated Box3 and Sphere for broad phase
       tempBox.current.setFromObject(group);
       tempBox.current.getBoundingSphere(tempSphere.current);
 
-      // Quick reject
       if (!targetSphere.current.intersectsSphere(tempSphere.current)) continue;
 
-      // BVH confirmation — reuse matrix and sphere
       group.traverse((child: any) => {
         if (!child.isMesh || !child.geometry?.boundsTree) return;
 
@@ -115,16 +125,19 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
         localSphere.current.applyMatrix4(tempMatrix.current);
 
         if (bvh.intersectsSphere(localSphere.current)) {
-          inside = true;
+          insideIndex = gi;
         }
       });
 
-      if (inside) break;
+      if (insideIndex !== -1) break;
     }
 
-    inHitboxRef.current = inside;
+    if (insideIndex !== inHitboxRef.current) {
+      inHitboxRef.current = insideIndex;
+      onHitboxStateChange?.(insideIndex);
+    }
 
-    if (inside) {
+    if (insideIndex !== -1) {
       PLANE_CONFIG.SPEEDS.IDLE = 0.15;
     } else {
       PLANE_CONFIG.SPEEDS.IDLE = 0.45;
@@ -133,16 +146,16 @@ export default function Hitbox({ targetRef, triggerInteract }: Props) {
 
   // Trigger from mobile button
   useEffect(() => {
-    if (triggerInteract && inHitboxRef.current) {
-      navigate("/");
+    if (triggerInteract && inHitboxRef.current !== -1) {
+      navigate(HITBOXES[inHitboxRef.current].route);
     }
   }, [triggerInteract, navigate]);
 
   // Trigger from keyboard
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "e" && inHitboxRef.current) {
-        navigate("/");
+      if (e.key.toLowerCase() === "e" && inHitboxRef.current !== -1) {
+        navigate(HITBOXES[inHitboxRef.current].route);
       }
     };
 

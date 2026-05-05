@@ -1,5 +1,5 @@
 // src/game/PlaneGame.tsx
-import React, { Suspense, useRef, useState } from "react";
+import React, { Suspense, useRef, useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -59,6 +59,11 @@ export default function PlaneGame({
 }: Props) {
   const planeRef = useRef<THREE.Group>(null!);
   const [started, setStart] = useState(false);
+  const [activeHitboxIndex, setActiveHitboxIndex] = useState(-1);
+
+  const handleHitboxStateChange = useCallback((idx: number) => {
+    setActiveHitboxIndex(idx);
+  }, []);
 
   return (
     <div className="w-full h-full relative">
@@ -83,6 +88,7 @@ export default function PlaneGame({
             config={config}
             playerRef={planeRef}
             triggerInteract={triggerInteract}
+            onHitboxStateChange={handleHitboxStateChange}
           />
           <Words />
           <CameraHandler planeRef={planeRef} mode={config.cameraMode} />
@@ -90,7 +96,10 @@ export default function PlaneGame({
       </Canvas>
 
       {/* ── HUD overlays ───────────────────────────────────────────────────── */}
-      <PipCameraPanel planeRef={planeRef} />
+      <PipCameraPanel
+        planeRef={planeRef}
+        activeHitboxIndex={activeHitboxIndex}
+      />
 
       {/* ── Loading screen ─────────────────────────────────────────────────── */}
       {!started && (
