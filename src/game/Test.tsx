@@ -3,6 +3,7 @@ import PlaneGame from "./PlaneGame";
 import MobileJoystick from "../components/MobileJoystick";
 import InteractButton from "../components/InteractButton";
 import BoostButton from "../components/BoostButton";
+import Bottomblur from "../components/Effects/Bottomblur";
 
 // ── Nav items
 const NAV_ITEMS = [
@@ -46,7 +47,16 @@ export default function Test() {
         joystick={joystick}
         triggerInteract={triggerInteract}
       />
-
+      <Bottomblur
+        target="parent"
+        position="bottom"
+        height="5rem"
+        strength={1}
+        divCount={5}
+        curve="bezier"
+        exponential
+        opacity={1}
+      />
       {/* ── Mobile controls ────────────────────────────────────────── */}
       {isMobile && (
         <>
@@ -55,7 +65,6 @@ export default function Test() {
           <BoostButton onInteract={handleInteract} />
         </>
       )}
-
       {/* ── Desktop hint ───────────────────────────────────────────── */}
       {!isMobile && (
         <div className="absolute top-4 left-4 z-10 text-xs bg-white/50 backdrop-blur-sm px-3 py-2 rounded-lg">
