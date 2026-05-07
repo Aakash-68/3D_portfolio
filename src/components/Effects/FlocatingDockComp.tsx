@@ -1,6 +1,7 @@
 import React from "react";
 import {
   IconBrandGithub,
+  IconBrandLinkedin,
   IconBrandX,
   IconExchange,
   IconFile,
@@ -8,6 +9,9 @@ import {
   IconHome,
   IconMail,
   IconNewSection,
+  IconPlaneArrivalFilled,
+  IconPlaneDeparture,
+  IconPlaneTilt,
   IconTerminal2,
 } from "@tabler/icons-react";
 import { FloatingDock } from "./FloatingDock";
@@ -15,33 +19,32 @@ import { FloatingDock } from "./FloatingDock";
 export function FloatingDockDemo() {
   const links = [
     {
-      title: "Home",
+      title: "Take-Off",
       icon: (
-        <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+        <IconPlaneDeparture className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
-    },
-
-    {
-      title: "Mail",
-      icon: (
-        <IconMail className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#",
+      href: "#/t",
     },
     {
       title: "GitHub",
       icon: (
         <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
+      href: "https://github.com/Aakash-68",
+    },
+    {
+      title: "LinkedIn",
+      icon: (
+        <IconBrandLinkedin className="h-full w-full text-neutral-500 dark:text-neutral-300" />
+      ),
+      href: "https://www.linkedin.com/in/aakash-yogabalu-0a85652a8/",
     },
     {
       title: "Resume",
       icon: (
         <IconFileCv className="h-full w-full text-neutral-500 dark:text-neutral-300" />
       ),
-      href: "#",
+      href: "https://drive.google.com/uc?export=download&id=16jGZIDGlMPEPp9HGTrRkwF9Dm1gM26Kf",
     },
   ];
   return (

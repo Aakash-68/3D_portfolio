@@ -50,7 +50,7 @@ export default function Test() {
       <Bottomblur
         target="parent"
         position="bottom"
-        height="5rem"
+        height={window.innerWidth < 768 ? "9rem" : "0rem"}
         strength={1}
         divCount={5}
         curve="bezier"

@@ -7,6 +7,7 @@ import Home from "./pages/home.jsx";
 import Fin from "./pages/fin.jsx";
 import Test from "./game/Test.js";
 import AboutPage from "./pages/about";
+import ContactForm from "./pages/contact.tsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/home" element={<Home />} />
         <Route path="/fin" element={<Fin />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactForm />} />
       </Routes>
     </HashRouter>
   </StrictMode>,
