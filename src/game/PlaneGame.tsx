@@ -11,6 +11,7 @@ import StableSky from "./StableSky";
 import Words from "./Words";
 import { LoadingScreen } from "../components/LoadingScreen";
 import PipCameraPanel from "./PIPcameraPanel";
+import ControlsUI from "./../components/ControlsUI";
 
 interface Config {
   globeRotationSpeed: number;
@@ -100,7 +101,7 @@ export default function PlaneGame({
         planeRef={planeRef}
         activeHitboxIndex={activeHitboxIndex}
       />
-
+      <ControlsUI />
       {/* ── Loading screen ─────────────────────────────────────────────────── */}
       {!started && (
         <div className="absolute inset-0 z-50">

@@ -50,7 +50,7 @@ export default function Test() {
       <Bottomblur
         target="parent"
         position="bottom"
-        height={window.innerWidth < 768 ? "9rem" : "0rem"}
+        height={window.innerWidth > 768 ? "5rem" : "0rem"}
         strength={1}
         divCount={5}
         curve="bezier"
@@ -64,12 +64,6 @@ export default function Test() {
           <InteractButton onInteract={handleInteract} />
           <BoostButton onInteract={handleInteract} />
         </>
-      )}
-      {/* ── Desktop hint ───────────────────────────────────────────── */}
-      {!isMobile && (
-        <div className="absolute top-4 left-4 z-10 text-xs bg-white/50 backdrop-blur-sm px-3 py-2 rounded-lg">
-          WASD → fly &nbsp;·&nbsp; E → interact &nbsp;·&nbsp; 1 / 2 → camera
-        </div>
       )}
     </div>
   );

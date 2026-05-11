@@ -29,35 +29,20 @@ const AboutPage: React.FC<AboutProps> = ({ onClose }) => {
              shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] 
              border border-white/20 z-30 flex flex-col overflow-hidden"
           >
-            <motion.button
-              initial={{ y: 0 }}
-              animate={{
-                y: [0, -4, 0],
-                rotate: [0, -6, 0],
-              }}
-              transition={{
-                duration: 1.8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              whileTap={{ scale: 0.9 }}
-              whileHover={{ scale: 1.08 }}
-              className="
-                absolute top-4 right-4
-                p-3 rounded-full
-                bg-white/70 backdrop-blur-xl
-                border border-white/30
-                shadow-md
-                hover:bg-white
-                transition-all duration-300
-                lg:hidden
-                z-50
-              "
+            <button
+              className="absolute right-4 top-4 rounded-full p-2 bg-[#eee] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
+              aria-label="Take off"
             >
-              <a href="#/t">
-                <IconPlaneDeparture className="h-5 w-5 text-neutral-700" />
+              <a
+                href="#/t"
+                className="flex items-center gap-1 text-[13px] text-[#555]"
+              >
+                <IconPlaneDeparture
+                  className="h-6 w-6"
+                  name="plane-departure"
+                />
               </a>
-            </motion.button>
+            </button>
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-10">
                 <span className="text-[9px] uppercase tracking-[0.4em] text-[#A0A0A0] mb-4 block font-bold">

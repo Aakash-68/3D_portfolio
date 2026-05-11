@@ -61,15 +61,15 @@ export default function ContactForm() {
             href="#/t"
             className="flex items-center gap-1 text-[13px] text-[#555]"
           >
-            <IconPlaneDeparture className="h-4 w-4" name="plane-departure" />
+            <IconPlaneDeparture className="h-6 w-6" name="plane-departure" />
           </a>
         </button>
         <h2 className="m-0 text-[22px] font-bold tracking-[-0.3px] text-[#111]">
-          Send me a mail ✉️
+          Send me a mail
         </h2>
 
         <p className="mt-1.5 text-[13.5px] text-[#888]">
-          Drop a message and I&apos;ll get back soon ✨
+          Drop a message and I&apos;ll get back soon
         </p>
 
         <div className="my-5 h-px bg-[#f0eded]" />

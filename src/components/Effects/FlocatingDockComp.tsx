@@ -19,13 +19,6 @@ import { FloatingDock } from "./FloatingDock";
 export function FloatingDockDemo() {
   const links = [
     {
-      title: "Take-Off",
-      icon: (
-        <IconPlaneDeparture className="h-full w-full text-neutral-500 dark:text-neutral-300" />
-      ),
-      href: "#/t",
-    },
-    {
       title: "GitHub",
       icon: (
         <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />
