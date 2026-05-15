@@ -12,17 +12,17 @@ const BASE = (import.meta as any).env.BASE_URL;
 // ── Hitbox GLB paths (mirrors Hitbox.tsx exactly) ─────────────────────────────
 const HITBOX_SOURCES = [
   {
-    path: BASE + "/assets/models/hitbox/c_outer.glb",
+    path: BASE + "assets/models/hitbox/c_outer.glb",
     label: "Contact",
     color: "#ef4444",
   },
   {
-    path: BASE + "/assets/models/hitbox/d_outer.glb",
+    path: BASE + "assets/models/hitbox/d_outer.glb",
     label: "About",
     color: "#ef4444",
   },
   {
-    path: BASE + "/assets/models/hitbox/i_outer.glb",
+    path: BASE + "assets/models/hitbox/i_outer.glb",
     label: "Projects",
     color: "#ef4444",
   },

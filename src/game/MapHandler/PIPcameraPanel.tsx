@@ -49,7 +49,7 @@ function cloneScene(src: THREE.Group): THREE.Group {
 // ── Globe ─────────────────────────────────────────────────────────────────────
 function PipGlobe() {
   const groupRef = useRef<THREE.Group>(null!);
-  const { scene, animations } = useGLTF(BASE + "/assets/models/globe.glb");
+  const { scene, animations } = useGLTF(BASE + "assets/models/globe.glb");
 
   const cloned = useRef<THREE.Group | null>(null);
   if (!cloned.current) cloned.current = cloneScene(scene);
@@ -70,7 +70,7 @@ function PipGlobe() {
 function PipPlane({ planeRef }: { planeRef: React.RefObject<THREE.Group> }) {
   const mirrorRef = useRef<THREE.Group>(null!);
   const meshRef = useRef<THREE.Group>(null!);
-  const { scene, animations } = useGLTF(BASE + "/assets/models/plane.glb");
+  const { scene, animations } = useGLTF(BASE + "assets/models/plane.glb");
 
   const cloned = useRef<THREE.Group | null>(null);
   if (!cloned.current) cloned.current = cloneScene(scene);
@@ -116,9 +116,9 @@ interface HitboxMarkersProps {
 function HitboxMarkers({ onPositionsUpdate }: HitboxMarkersProps) {
   const { camera, size } = useThree();
 
-  const c = useGLTF(BASE + "/assets/models/hitbox/c_outer.glb");
-  const d = useGLTF(BASE + "/assets/models/hitbox/d_outer.glb");
-  const i = useGLTF(BASE + "/assets/models/hitbox/i_outer.glb");
+  const c = useGLTF(BASE + "assets/models/hitbox/c_outer.glb");
+  const d = useGLTF(BASE + "assets/models/hitbox/d_outer.glb");
+  const i = useGLTF(BASE + "assets/models/hitbox/i_outer.glb");
 
   const gltfs = [c, d, i];
   const worldPositions = useRef<THREE.Vector3[]>([]);

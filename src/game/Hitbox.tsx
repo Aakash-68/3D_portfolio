@@ -27,21 +27,21 @@ const BASE = (import.meta as any).env.BASE_URL;
 
 export const HITBOXES = [
   {
-    path: BASE + "/assets/models/hitbox/c_outer.glb",
+    path: BASE + "assets/models/hitbox/c_outer.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
     label: "Contact",
     route: "/Cland",
   },
   {
-    path: BASE + "/assets/models/hitbox/d_outer.glb",
+    path: BASE + "assets/models/hitbox/d_outer.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
     label: "About",
     route: "/Aland",
   },
   {
-    path: BASE + "/assets/models/hitbox/i_outer.glb",
+    path: BASE + "assets/models/hitbox/i_outer.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
     label: "Projects",

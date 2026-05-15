@@ -27,7 +27,7 @@ export default function World({
   const globeRef = useRef<THREE.Group>(null!);
   const visualGlobeRef = useRef<THREE.Group>(null!);
 
-  const { scene, animations } = useGLTF(BASE + "/assets/models/globe.glb");
+  const { scene, animations } = useGLTF(BASE + "assets/models/globe.glb");
   const { actions } = useAnimations(animations, visualGlobeRef);
 
   useEffect(() => {

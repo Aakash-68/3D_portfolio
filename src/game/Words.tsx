@@ -7,19 +7,19 @@ const BASE = (import.meta as any).env.BASE_URL;
 
 const WORDS = [
   {
-    path: BASE + "/assets/models/Word/Contact.glb",
+    path: BASE + "assets/models/Word/Contact.glb",
     position: [0, 0, 0] as any,
     scale: 32,
     rotation: [0, 0, 0] as [number, number, number],
   },
   {
-    path: BASE + "/assets/models/Word/About.glb",
+    path: BASE + "assets/models/Word/About.glb",
     position: [0, 0, 0] as any,
     scale: 32,
     rotation: [0, 0, 0] as [number, number, number],
   },
   {
-    path: BASE + "/assets/models/Word/project.glb",
+    path: BASE + "assets/models/Word/project.glb",
     position: [0, 0, 0] as any,
     scale: 32,
     rotation: [0, 0, 0] as [number, number, number],

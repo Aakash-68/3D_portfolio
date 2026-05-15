@@ -50,9 +50,9 @@ const CONFIG = {
   // ── Videos — 3 interstitial videos shown between rounds ──
   // video1 plays as intro, video2 after round 1, video3 after round 2
   VIDEOS: {
-    intro: BASE + "/assets/Videos/India/video1.mp4",
-    video2: BASE + "/assets/Videos/India/video2.mp4",
-    video3: BASE + "/assets/Videos/India/video3.mp4",
+    intro: BASE + "assets/Videos/India/video1.mp4",
+    video2: BASE + "assets/Videos/India/video2.mp4",
+    video3: BASE + "assets/Videos/India/video3.mp4",
   } as Record<string, string>,
 
   // ── Success component — shown on win ─────────────────────

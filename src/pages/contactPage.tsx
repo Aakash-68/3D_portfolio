@@ -99,7 +99,7 @@ export default function Contact() {
       <div
         className="hidden lg:block sm:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url(${BASE}/assets/Images/ContactBg.png)`,
+          backgroundImage: `url(${BASE}assets/Images/ContactBg.png)`,
         }}
       />
       {/* subtle warm overlay to unify */}
