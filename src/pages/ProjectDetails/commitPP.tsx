@@ -222,36 +222,6 @@ const CommitPP: React.FC<ProjectPageProps> = ({
               </div>
             )}
           </div>
-
-          {/* CTA */}
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.75em 1.8em",
-              background: "#f5f4ef",
-              color: "#111",
-              borderRadius: "999px",
-              fontSize: "clamp(0.8rem, 1.4vw, 1rem)",
-              letterSpacing: "0.15em",
-              textDecoration: "none",
-              textTransform: "uppercase",
-              alignSelf: "flex-start",
-              transition: "opacity 0.2s",
-            }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.75")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")
-            }
-          >
-            View Code ↗
-          </a>
         </div>
       </div>
     </div>
