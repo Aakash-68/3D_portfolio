@@ -16,7 +16,7 @@ const AboutPage: React.FC<AboutProps> = ({ onClose }) => {
   const navigate = useNavigate();
   return (
     <>
-      <div className="fixed inset-0 backdrop-blur-sm z-20">
+      <div className="fixed inset-0 backdrop-blur-sm z-20 ">
         {/* Orbs */}
         <div className="pointer-events-none absolute left-[15%] top-[10%] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(255,180,140,0.45)_0%,transparent_70%)]" />
         <div className="pointer-events-none absolute bottom-[10%] right-[15%] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(220,160,200,0.35)_0%,transparent_70%)]" />
@@ -25,16 +25,16 @@ const AboutPage: React.FC<AboutProps> = ({ onClose }) => {
         <div className="flex flex-col mt-10 lg:flex-row items-start justify-center gap-6 lg:gap-10 w-full px-6">
           <motion.div
             className=" w-full  max-w-[600px] min-h-[650px] 
-             bg-white/40 backdrop-blur-2xl rounded-3xl p-12 
+              backdrop-blur-2xl rounded-3xl p-12 
              shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] 
-             border border-white/20 z-30 flex flex-col overflow-hidden"
+             border bg-[#f7f1e9] border-white/20 z-30 flex flex-col overflow-hidden"
           >
             <button
-              className="absolute right-4 top-4 rounded-full p-2 bg-[#eee] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
+              className="absolute right-4 top-4 rounded-full p-2 bg-[#ffbbbb] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
               aria-label="Take off"
             >
               <a
-                href="#/t"
+                href="#/"
                 className="flex items-center gap-1 text-[13px] text-[#555]"
               >
                 <IconPlaneDeparture
@@ -134,7 +134,7 @@ const AboutPage: React.FC<AboutProps> = ({ onClose }) => {
               </footer>
             </div>
           </motion.div>
-          <div className="hidden lg:flex flex-col items-center justify-start gap-2 w-full max-w-[600px] min-h-[650px]">
+          <div className="hidden lg:flex flex-col items-center justify-start gap-2 w-full max-w-[600px] min-h-[650px] rounded-3xl p-12 z-30">
             <img
               src="/3D_portfolio/assets/profile.svg"
               alt="Portfolio Profile"

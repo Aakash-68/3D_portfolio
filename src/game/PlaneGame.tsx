@@ -6,12 +6,12 @@ import * as THREE from "three";
 
 import Plane from "./Plane";
 import World from "./World";
-import CameraHandler from "./CameraHandler";
+import CameraHandler from "./MapHandler/CameraHandler";
 import StableSky from "./StableSky";
 import Words from "./Words";
 import { LoadingScreen } from "../components/LoadingScreen";
-import PipCameraPanel from "./PIPcameraPanel";
 import ControlsUI from "./../components/ControlsUI";
+import PipCameraPanel from "./MapHandler/PIPcameraPanel";
 
 interface Config {
   globeRotationSpeed: number;

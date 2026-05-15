@@ -31,21 +31,21 @@ export const HITBOXES = [
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
     label: "Contact",
-    route: "/contact",
+    route: "/Cland",
   },
   {
     path: BASE + "/assets/models/hitbox/d_outer.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
     label: "About",
-    route: "/about",
+    route: "/Aland",
   },
   {
     path: BASE + "/assets/models/hitbox/i_outer.glb",
     position: [0, 0, 0] as [number, number, number],
     scale: 32,
     label: "Projects",
-    route: "/projects",
+    route: "/Pland",
   },
 ];
 

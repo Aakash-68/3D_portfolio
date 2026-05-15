@@ -1,39 +1,38 @@
-import React from "react";
-
-/**
- * ProjectPagePlaceholder
- *
- * Drop this into a MenuItemData's `overlayContent` prop.
- * The component receives the project name + image via props so it can
- * render something meaningful even as a placeholder.
- *
- * Replace the contents with your real per-project page later — the
- * overlay animation wrapper in FlowingMenu handles all the expand/collapse.
- */
+import React, { useState, useEffect, useCallback } from "react";
 
 interface ProjectPageProps {
-  /** Project title (same as MenuItemData.text) */
   title: string;
-  /** Hero image URL (same as MenuItemData.image) */
-  image: string;
-  /** External link to live project */
+  /** Pass one or more image URLs — single string still works */
+  images: string | string[];
   link?: string;
-  /** Short one-liner */
   tagline?: string;
-  /** Tech stack / tags */
   tags?: string[];
-  /** Year */
   year?: string;
 }
 
-const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
+const DinoPagePlaceholder: React.FC<ProjectPageProps> = ({
   title,
-  image,
+  images,
   link = "#",
   tagline = "Edit this component to describe the project.",
   tags = [],
   year,
 }) => {
+  const imageList = Array.isArray(images) ? images : [images];
+  const [current, setCurrent] = useState(0);
+
+  const next = useCallback(
+    () => setCurrent((c) => (c + 1) % imageList.length),
+    [imageList.length],
+  );
+
+  // Auto-advance every 3 s, reset timer when user manually picks a dot
+  useEffect(() => {
+    if (imageList.length <= 1) return;
+    const id = setInterval(next, 4500);
+    return () => clearInterval(id);
+  }, [next, imageList.length]);
+
   return (
     <div
       className="w-full h-full flex flex-col overflow-auto"
@@ -41,7 +40,6 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
         background: "#111",
         color: "#f5f4ef",
         fontFamily: "'Bebas Neue', 'Impact', 'Arial Black', sans-serif",
-        /* leave top-right room for the floating ✕ button */
         paddingTop: "clamp(1.5rem, 5vw, 4rem)",
         paddingRight: "clamp(1.5rem, 5vw, 4rem)",
         paddingBottom: "clamp(1.5rem, 5vw, 4rem)",
@@ -81,41 +79,75 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
 
       {/* ── Two-column body ─────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col lg:flex-row gap-10 min-h-0">
-
-        {/* Left — hero image */}
+        {/* Left — slideshow */}
         <div
-          className="relative overflow-hidden rounded-2xl flex-shrink-0"
-          style={{
-            width: "100%",
-            maxWidth: "clamp(260px, 48vw, 680px)",
-            height: "clamp(180px, 38vh, 480px)",
-          }}
+          className="flex flex-col flex-shrink-0 gap-3"
+          style={{ width: "100%", maxWidth: "clamp(260px, 48vw, 680px)" }}
         >
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-full object-cover"
-            style={{ display: "block" }}
-          />
-          {/* scanline grain */}
+          {/* Image frame */}
           <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px)",
-            }}
-          />
-          {/* bottom vignette */}
-          <div
-            className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
-            style={{ background: "linear-gradient(to top, #111 0%, transparent 100%)" }}
-          />
+            className="relative overflow-hidden rounded-2xl"
+            style={{ height: "clamp(180px, 38vh, 480px)" }}
+          >
+            {imageList.map((src, i) => (
+              <img
+                key={src + i}
+                src={src}
+                alt={`${title} screenshot ${i + 1}`}
+                className="w-full h-full object-cover absolute inset-0"
+                style={{
+                  display: "block",
+                  opacity: i === current ? 1 : 0,
+                  transition: "opacity 0.6s ease",
+                }}
+              />
+            ))}
+
+            {/* scanline grain */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px)",
+              }}
+            />
+            {/* bottom vignette */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(to top, #111 0%, transparent 100%)",
+              }}
+            />
+          </div>
+
+          {/* Dot indicators — only shown when there are multiple images */}
+          {imageList.length > 1 && (
+            <div className="flex justify-center gap-2">
+              {imageList.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  style={{
+                    cursor: "none",
+                    width: i === current ? "1.5rem" : "0.45rem",
+                    height: "0.45rem",
+                    borderRadius: "999px",
+                    border: "none",
+                    padding: 0,
+                    background: i === current ? "#f5f4ef" : "#f5f4ef33",
+                    transition: "width 0.3s ease, background 0.3s ease",
+                  }}
+                  aria-label={`Go to image ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right — text body */}
         <div className="flex flex-col justify-between flex-1 gap-6">
-
-          {/* Tagline / body copy area */}
+          {/* Tagline */}
           <div>
             <p
               style={{
@@ -132,11 +164,14 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
 
             {/* Placeholder content blocks */}
             <div className="flex flex-col gap-3">
-              {["Overview", "Tech Stack", "Highlights"].map((section) => (
+              {["Highlights"].map((section) => (
                 <div
                   key={section}
                   className="rounded-xl p-4"
-                  style={{ border: "1px solid #f5f4ef0f", background: "#f5f4ef07" }}
+                  style={{
+                    border: "1px solid #f5f4ef0f",
+                    background: "#f5f4ef07",
+                  }}
                 >
                   <p
                     style={{
@@ -157,7 +192,18 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
                       lineHeight: 1.6,
                     }}
                   >
-                    Replace this with real content for the {title} project.
+                    Implemented a NeuroEvolution of Augmenting Topologies (NEAT)
+                    system to evolve neural networks that autonomously play the
+                    Google Dino game. Designed a fitness-based evaluation system
+                    where agents are rewarded for survival time and obstacle
+                    avoidance, enabling progressive improvement across
+                    generations. Integrated real-time visualization using Pygame
+                    to observe neural network behavior and evolutionary
+                    progress. Gained hands-on experience in evolutionary
+                    algorithms, neural network optimization, and AI agent
+                    training without supervised learning, reinforcing core
+                    concepts of reinforcement-driven adaptation and autonomous
+                    decision-making systems.
                   </p>
                 </div>
               ))}
@@ -192,7 +238,6 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              cursor: "none",
               display: "inline-flex",
               alignItems: "center",
               gap: "0.5rem",
@@ -207,10 +252,14 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
               alignSelf: "flex-start",
               transition: "opacity 0.2s",
             }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.75")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
+            onMouseEnter={(e) =>
+              ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.75")
+            }
+            onMouseLeave={(e) =>
+              ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")
+            }
           >
-            View Live ↗
+            View Code ↗
           </a>
         </div>
       </div>
@@ -218,4 +267,4 @@ const ProjectPagePlaceholder: React.FC<ProjectPageProps> = ({
   );
 };
 
-export default ProjectPagePlaceholder;
+export default DinoPagePlaceholder;

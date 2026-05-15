@@ -6,8 +6,9 @@ import { animate } from "motion/react";
 const TRANSITION_ROUTES = new Set(["/about", "/contact"]);
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/about": "About",
-  "/contact": "Contact",
+  "/ALand": "About",
+  "/PLand": "Projects",
+  "/CLand": "Contact",
 };
 
 const EASE_QUART = [0.76, 0, 0.24, 1] as [number, number, number, number];

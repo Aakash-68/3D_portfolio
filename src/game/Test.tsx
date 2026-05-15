@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import PlaneGame from "./PlaneGame";
 import MobileJoystick from "../components/MobileJoystick";
 import InteractButton from "../components/InteractButton";
-import BoostButton from "../components/BoostButton";
 import Bottomblur from "../components/Effects/Bottomblur";
 
 // ── Nav items
@@ -62,7 +61,6 @@ export default function Test() {
         <>
           <MobileJoystick onMove={setJoystick} />
           <InteractButton onInteract={handleInteract} />
-          <BoostButton onInteract={handleInteract} />
         </>
       )}
     </div>

@@ -40,25 +40,24 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#fdf8f5] px-5 py-10">
+    <div className="relative flex flex-col items-center justify-center overflow-hidden bg-[#fdf8f5] w-[95vw] max-h-full max-w-full py-10 rounded-[40px]">
+      {" "}
       {/* Orbs */}
       <div className="pointer-events-none absolute left-[15%] top-[10%] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(255,180,140,0.45)_0%,transparent_70%)]" />
       <div className="pointer-events-none absolute bottom-[10%] right-[15%] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(220,160,200,0.35)_0%,transparent_70%)]" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,210,170,0.3)_0%,transparent_70%)]" />
-
       {/* Header */}
-      <div className="z-10 mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-[#aaa]">
+      <div className="z-10 mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-[#aaa] ">
         Let&apos;s create something together.
       </div>
-
       {/* Card */}
       <div className="relative z-10 w-full max-w-[440px] rounded-[20px] border border-black/5 bg-white/90 p-9 shadow-[0_8px_40px_rgba(0,0,0,0.06)] backdrop-blur-[20px]">
         <button
-          className="absolute right-4 top-4 rounded-full p-2 bg-[#eee] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
+          className="absolute right-4 top-4 rounded-full p-2 bg-[#ffbbbb] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
           aria-label="Take off"
         >
           <a
-            href="#/t"
+            href="#/"
             className="flex items-center gap-1 text-[13px] text-[#555]"
           >
             <IconPlaneDeparture className="h-6 w-6" name="plane-departure" />

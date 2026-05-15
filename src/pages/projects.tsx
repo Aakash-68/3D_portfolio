@@ -1,6 +1,9 @@
-import { IconPlaneDeparture } from "@tabler/icons-react";
+import { IconPlaneDeparture, type IconGitCommit } from "@tabler/icons-react";
 import FlowingMenu, { MenuItemData } from "../components/Effects/FlowingMenu";
-import ProjectPagePlaceholder from "./ProjectPagePlaceholder";
+import ProjectPagePlaceholder from "./ProjectDetails/ProjectPagePlaceholder";
+import CommitPP from "./ProjectDetails/commitPP";
+import FileSharingPagePlaceholder from "./ProjectDetails/P2P";
+import DinoPagePlaceholder from "./ProjectDetails/Dino";
 
 /*
  * Each item now carries an `overlayContent` React node.
@@ -18,10 +21,13 @@ const demoItems: MenuItemData[] = [
     overlayContent: (
       <ProjectPagePlaceholder
         title="Movie Website"
-        image="/3D_portfolio/assets/Images/MovieWeb2.png"
+        images={[
+          "/3D_portfolio/assets/Images/MovieWeb1.png",
+          "/3D_portfolio/assets/Images/MovieWeb2.png",
+        ]}
         link="https://stripe.com"
-        tagline="A sleek, cinematic browsing experience for discovering and tracking films."
-        tags={["React", "TMDB API", "TailwindCSS"]}
+        tagline="An interactive movie browsing platform developed using React.js, Vite, and the TMDB API. The website allows users to explore popular films, search movies instantly, and access detailed information with a sleek responsive design. Through this project, I gained hands-on experience with REST APIs, async data fetching, component-based architecture, and responsive frontend development."
+        tags={["React", "TMDB API", "Vite"]}
         year="2024"
       />
     ),
@@ -29,14 +35,20 @@ const demoItems: MenuItemData[] = [
   {
     link: "#/contact",
     text: "P2P File Sharing",
-    image: "https://picsum.photos/600/400?random=44",
+    image: "/3D_portfolio/assets/Images/p2p2.png",
     overlayContent: (
-      <ProjectPagePlaceholder
+      <FileSharingPagePlaceholder
         title="P2P File Sharing"
-        image="https://picsum.photos/600/400?random=44"
-        link="#/contact"
-        tagline="Browser-native peer-to-peer file transfer with zero server storage."
-        tags={["WebRTC", "Node.js", "TypeScript"]}
+        images="/3D_portfolio/assets/Images/p2p1.png"
+        link="https://github.com/UNB-SWE4403/wi26-prj09-team-16"
+        tagline="A distributed peer-to-peer file sharing system built using Python, designed under a Peer-to-Peer (P2P) architecture as part of a Software Architecture & Design Patterns course. The system enables decentralized file discovery, search, and direct file transfer between peers without relying on a central server. It supports both local network and localhost communication using a combination of TCP for reliable data transfer and UDP for peer discovery. Through this project, I gained practical experience in distributed systems design, network programming, and architectural decision-making in real-world software systems."
+        tags={[
+          "Python",
+          "P2P Architecture",
+          "TCP/UDP Networking",
+          "Distributed Systems",
+          "Socket Programming",
+        ]}
         year="2024"
       />
     ),
@@ -46,12 +58,18 @@ const demoItems: MenuItemData[] = [
     text: "Google Dino With NEAT",
     image: "/3D_portfolio/assets/Images/Dino1.png",
     overlayContent: (
-      <ProjectPagePlaceholder
+      <DinoPagePlaceholder
         title="Google Dino With NEAT"
-        image="/3D_portfolio/assets/Images/Dino1.png"
+        images="/3D_portfolio/assets/Images/Dino1.png"
         link="https://apple.com"
-        tagline="Teaching a neural network to play Chrome's offline dinosaur game via neuroevolution."
-        tags={["Python", "NEAT", "Pygame"]}
+        tagline="An AI-powered version of the Google Dino game enhanced with the NEAT (NeuroEvolution of Augmenting Topologies) algorithm. The project trains neural networks to learn optimal gameplay strategies through evolutionary techniques rather than traditional hard-coded logic. Over generations, the AI progressively improves its ability to survive obstacles by evolving better-performing neural structures, demonstrating concepts of machine learning, neuroevolution, and reinforcement learning in a visual and interactive environment."
+        tags={[
+          "Python",
+          "NEAT Algorithm",
+          "Machine Learning",
+          "Neuroevolution",
+          "Pygame",
+        ]}
         year="2023"
       />
     ),
@@ -59,15 +77,18 @@ const demoItems: MenuItemData[] = [
   {
     link: "https://vercel.com",
     text: "Commit Clock",
-    image: "https://picsum.photos/600/400?random=33",
+    image: "/3D_portfolio/assets/Images/commit1.png",
     overlayContent: (
-      <ProjectPagePlaceholder
+      <CommitPP
         title="Commit Clock"
-        image="https://picsum.photos/600/400?random=33"
+        images={[
+          "/3D_portfolio/assets/Images/commit1.png",
+          "/3D_portfolio/assets/Images/commit2.png",
+        ]}
         link="https://vercel.com"
-        tagline="A VS Code extension that visualises your coding sessions as a living commit timeline."
-        tags={["VS Code API", "TypeScript", "GitHub"]}
-        year="2023"
+        tagline="Commit Clock is a Visual Studio Code extension designed to automate Git commits at user-defined time intervals. The extension provides an intuitive interface for configuring commit frequency, selecting branches, and managing automated commit sessions directly within VS Code. Built to support both local and remote development environments, this project helped me gain deeper experience with VS Code extension development, Git automation, workspace integration, and user-focused tooling design."
+        tags={["VS Code API", "TypeScript", "GitHub", "JavaScript"]}
+        year="2025"
       />
     ),
   },
@@ -116,11 +137,11 @@ export default function Projects() {
         >
           {/* Fly-to-game button */}
           <button
-            className="absolute right-4 top-4 z-10 rounded-full p-2 bg-[#eee] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
+            className="absolute right-4 top-4 z-10 rounded-full p-2 bg-[#ffbbbb] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
             aria-label="Take off"
           >
             <a
-              href="#/t"
+              href="#/"
               className="flex items-center gap-1 text-[13px] text-[#555]"
             >
               <IconPlaneDeparture className="h-6 w-6" name="plane-departure" />

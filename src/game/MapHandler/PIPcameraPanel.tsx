@@ -16,7 +16,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useNavigate } from "react-router-dom";
-import { HITBOXES } from "./Hitbox";
+import { HITBOXES } from "../Hitbox";
 
 const BASE = (import.meta as any).env.BASE_URL;
 
