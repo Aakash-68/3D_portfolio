@@ -91,6 +91,7 @@ export default function Contact() {
     setTimeout(() => setSent(false), 3000);
     setFormState({ name: "", email: "", message: "" });
   };
+  const BASE = (import.meta as any).env.BASE_URL;
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-y-auto overflow-auto rounded-lg shadow-lg bg-white/80 backdrop-blur-sm border border-[#5a3825]/20 lg:scale-[.8] lg:origin-center">
@@ -98,7 +99,7 @@ export default function Contact() {
       <div
         className="hidden lg:block sm:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/3D_portfolio/assets/Images/ContactBg.png')",
+          backgroundImage: `url(${BASE}/assets/Images/ContactBg.png)`,
         }}
       />
       {/* subtle warm overlay to unify */}

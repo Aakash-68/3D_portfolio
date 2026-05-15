@@ -9,6 +9,7 @@ import { IconPlaneDeparture } from "@tabler/icons-react";
 interface AboutProps {
   onClose: () => void;
 }
+const BASE = (import.meta as any).env.BASE_URL;
 
 const roles = ["Software engineer", "Web developer", "3D artist"];
 
@@ -136,7 +137,7 @@ const AboutPage: React.FC<AboutProps> = ({ onClose }) => {
           </motion.div>
           <div className="hidden lg:flex flex-col items-center justify-start gap-2 w-full max-w-[600px] min-h-[650px] rounded-3xl p-12 z-30">
             <img
-              src="/3D_portfolio/assets/profile.svg"
+              src={`${BASE}assets/profile.png`}
               alt="Portfolio Profile"
               className="w-[360px] object-contain"
             />
