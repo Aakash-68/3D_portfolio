@@ -7,14 +7,6 @@ import DinoPagePlaceholder from "./ProjectDetails/Dino";
 
 import { useEffect, useRef, useState } from "react";
 
-/*
- * Each item now carries an `overlayContent` React node.
- * Swap `<ProjectPagePlaceholder …/>` for your own page component whenever
- * you're ready — it will render inside the same expand/collapse animation.
- *
- * The `link` field is still used by the CTA button inside the overlay
- * (and by the legacy fallback layout). Keep it pointing at the live URL.
- */
 const BASE = (import.meta as any).env.BASE_URL;
 
 const demoItems: MenuItemData[] = [
@@ -99,14 +91,21 @@ const demoItems: MenuItemData[] = [
 ];
 
 export default function Projects() {
+  const hasAnimated = useRef(false);
   const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
-  // Staggered entry animation on mount
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
-    return () => clearTimeout(t);
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    const raf = requestAnimationFrame(() => {
+      const t = setTimeout(() => setVisible(true), 80);
+      return () => clearTimeout(t);
+    });
+
+    return () => cancelAnimationFrame(raf);
   }, []);
+
   return (
     <>
       {/* Mobile: fullscreen, no title */}
@@ -136,7 +135,6 @@ export default function Projects() {
       </div>
 
       {/* Desktop: page layout with title + centred card */}
-      {/* Desktop: page layout with title + centred card */}
       <div
         className="flowing-menu hidden md:flex flex-col items-center"
         style={{
@@ -144,7 +142,7 @@ export default function Projects() {
           minHeight: "100vh",
           background: "#f5f4ef",
           paddingTop: "3rem",
-          paddingBottom: "0", // ← remove bottom padding; footer handles its own
+          paddingBottom: "0",
           boxSizing: "border-box",
         }}
       >
@@ -179,7 +177,7 @@ export default function Projects() {
             width: "80%",
             maxWidth: "1100px",
             borderTop: "1px solid #1a1a18",
-            marginTop: "2rem", // ← gap between menu and line
+            marginTop: "2rem",
             opacity: visible ? 1 : 0,
             transition: "opacity 0.5s ease 0.7s",
           }}

@@ -22,25 +22,30 @@ const socialLinks = [
 ];
 
 export default function ContactPage() {
+  const hasAnimated = useRef(false);
   const [visible, setVisible] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
 
-  // ── Formspree hook ────────────────────────────────────────────────────────
   const [state, handleSubmit] = useForm("meedqrae");
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
-    return () => clearTimeout(t);
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    const raf = requestAnimationFrame(() => {
+      const t = setTimeout(() => setVisible(true), 80);
+      return () => clearTimeout(t);
+    });
+
+    return () => cancelAnimationFrame(raf);
   }, []);
 
-  // ── Shared transition helper ──────────────────────────────────────────────
   const fade = (delay: number) => ({
     opacity: visible ? 1 : 0,
     transform: visible ? "translateY(0)" : "translateY(16px)",
     transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`,
   });
 
-  // ── Underline-on-focus input style ───────────────────────────────────────
   const inputBase: React.CSSProperties = {
     width: "100%",
     background: "transparent",
@@ -132,12 +137,7 @@ export default function ContactPage() {
         </div>
 
         {/* ── Rule ─────────────────────────────────────────────────── */}
-        <div
-          style={{
-            borderTop: "1px solid #1a1a18",
-            ...fade(0.26),
-          }}
-        />
+        <div style={{ borderTop: "1px solid #1a1a18", ...fade(0.26) }} />
 
         {/* ── Two-column layout ────────────────────────────────────── */}
         <div
@@ -147,7 +147,6 @@ export default function ContactPage() {
           {/* ── LEFT — Form ────────────────────────────────────────── */}
           <div>
             {state.succeeded ? (
-              /* ── Success state ─────────────────────────────────── */
               <div className="pt-4">
                 <p
                   style={{
@@ -176,7 +175,6 @@ export default function ContactPage() {
                 </p>
               </div>
             ) : (
-              /* ── Form ──────────────────────────────────────────── */
               <form onSubmit={handleSubmit} noValidate>
                 {/* Name */}
                 <div className="mb-7">

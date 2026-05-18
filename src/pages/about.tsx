@@ -6,13 +6,6 @@ import { FloatingDockDemo } from "../components/Effects/FlocatingDockComp";
 import CurvedLoop from "../components/Effects/Ribbon";
 import { IconPlaneDeparture } from "@tabler/icons-react";
 
-// ─── Tailwind config note ────────────────────────────────────────────────────
-// Add to your tailwind.config.js:
-//   fontFamily: { bebas: ['"Bebas Neue"', 'sans-serif'], mono: ['"Space Mono"', 'monospace'], serif: ['"DM Serif Display"', 'serif'] }
-// Add to your globals.css:
-//   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&display=swap');
-// ─────────────────────────────────────────────────────────────────────────────
-
 const skills = [
   "React",
   "TypeScript",
@@ -47,14 +40,25 @@ const links = [
 ];
 
 export default function About() {
+  // Use a ref so this is NEVER reset — even if the component re-renders due to
+  // scroll events, parent updates, etc. `visible` flips to true exactly once.
+  const hasAnimated = useRef(false);
   const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
-  // Staggered entry animation on mount
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+    // Guard: only run once, ever.
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    // rAF ensures the browser has painted the initial (hidden) state before
+    // we flip visible=true, so the CSS transitions actually play.
+    const raf = requestAnimationFrame(() => {
+      const t = setTimeout(() => setVisible(true), 80);
+      return () => clearTimeout(t);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, []); // empty deps — this effect never re-runs
 
   return (
     <main
@@ -95,12 +99,8 @@ export default function About() {
       />
 
       {/* ── Main content ─────────────────────────────────────────────── */}
-      <div
-        ref={ref}
-        className="mx-auto px-8 md:px-12"
-        style={{ maxWidth: "820px" }}
-      >
-        {/* Pink accent icon — top right, matching Projects page */}
+      <div className="mx-auto px-8 md:px-12" style={{ maxWidth: "820px" }}>
+        {/* Pink accent icon */}
         <div
           className="flex justify-end"
           style={{
@@ -121,7 +121,7 @@ export default function About() {
           ></div>
         </div>
 
-        {/* ── Name — the centrepiece ───────────────────────────────────── */}
+        {/* ── Name ───────────────────────────────────────────────────── */}
         <div
           style={{
             opacity: visible ? 1 : 0,
@@ -214,7 +214,7 @@ export default function About() {
                 color: "#333330",
               }}
             >
-              I’m a Software Engineering student at the University of New
+              I'm a Software Engineering student at the University of New
               Brunswick with a strong interest in{" "}
             </span>
 
@@ -272,9 +272,11 @@ export default function About() {
                     padding: "5px 12px",
                     borderRadius: "1px",
                     background: "transparent",
+                    // Cap the stagger so off-screen tags don't keep animating
+                    // as the user scrolls down to them — max delay is 0.9s.
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(8px)",
-                    transition: `opacity 0.4s ease ${0.45 + i * 0.06}s, transform 0.4s ease ${0.45 + i * 0.06}s`,
+                    transition: `opacity 0.4s ease ${Math.min(0.45 + i * 0.06, 0.9)}s, transform 0.4s ease ${Math.min(0.45 + i * 0.06, 0.9)}s`,
                     display: "inline-block",
                   }}
                 >
@@ -377,7 +379,7 @@ export default function About() {
           }}
         />
         <footer
-          className="pt-10 "
+          className="pt-10"
           style={{
             opacity: visible ? 1 : 0,
             transform: visible ? "translateY(0)" : "translateY(-8px)",
@@ -393,7 +395,8 @@ export default function About() {
             className="custom-text-style"
           />
         </footer>
-        {/* ── Footer line ──────────────────────────────────────────── */}
+
+        {/* ── Footer line ──────────────────────────────────────────────── */}
         <div
           className="py-6 flex items-center justify-between"
           style={{
