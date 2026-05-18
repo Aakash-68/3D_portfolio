@@ -1,10 +1,10 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import AboutPage from "../../pages/about";
-
-const BASE = (import.meta as any).env.BASE_URL;
+import { useNavigate } from "react-router-dom";
 import { useVideoPreloader } from "./../../components/useVideoPreloader";
 import VideoPreloaderScreen from "./../../components/VideoPreloaderScreen";
+
+const BASE = (import.meta as any).env.BASE_URL;
 
 const CONFIG = {
   ALLOWED_KEYS: ["q", "w", "e", "a", "s", "d"] as const,
@@ -24,7 +24,6 @@ const CONFIG = {
     video2: BASE + "assets/Videos/India/video2.mp4",
     video3: BASE + "assets/Videos/India/video3.mp4",
   } as Record<string, string>,
-  SUCCESS_COMPONENT: (<AboutPage />) as React.ReactNode,
   DEFAULT_DIFFICULTY: "medium" as Difficulty,
 };
 
@@ -49,25 +48,19 @@ const ROUND_COUNT = 3;
 type Difficulty = "easy" | "medium" | "hard";
 type GamePhase = "video" | "prompt" | "typing" | "result" | "success" | "fail";
 
-// ── Glassmorphism style tokens ──────────────────────────────
 const G = {
-  bg: "linear-gradient(135deg,#e8e8ee 0%,#f4f4f8 40%,#dde0ea 100%)",
   card: "rgba(255,255,255,0.52)",
   cardBorder: "1px solid rgba(255,255,255,0.78)",
   cardShadow:
     "0 8px 32px rgba(130,138,170,0.16),inset 0 1px 0 rgba(255,255,255,0.92)",
-  pill: "rgba(255,255,255,0.70)",
-  pillBorder: "1px solid rgba(255,255,255,0.90)",
   track: "rgba(175,180,210,0.28)",
   bar: "rgba(140,148,192,0.75)",
   txtTitle: "rgba(60,65,100,0.88)",
   txtSub: "rgba(85,90,118,0.72)",
   txtHint: "rgba(120,128,160,0.55)",
-  dotOff: "rgba(175,180,210,0.32)",
   dotOn: "rgba(115,125,175,0.82)",
   success: "rgba(80,160,120,0.82)",
   danger: "rgba(200,80,80,0.82)",
-  btnHover: "rgba(255,255,255,0.72)",
 };
 
 function getRandomCombo(difficulty: Difficulty, levelNum: number): string {
@@ -76,7 +69,6 @@ function getRandomCombo(difficulty: Difficulty, levelNum: number): string {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// ── Reusable glass card wrapper ─────────────────────────────
 function GlassCard({
   children,
   style,
@@ -103,6 +95,7 @@ function GlassCard({
 
 export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
   const { ready, progress, objectUrls } = useVideoPreloader(VIDEO_URLS);
+  const navigate = useNavigate();
 
   const resolveUrl = (key: string) => {
     const orig = CONFIG.VIDEOS[key] ?? CONFIG.VIDEOS.intro;
@@ -135,6 +128,13 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
       window.removeEventListener("orientationchange", check);
     };
   }, []);
+
+  // ── Navigate on success ──────────────────────────────────
+  useEffect(() => {
+    if (phase === "success") {
+      navigate("/about");
+    }
+  }, [phase, navigate]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -326,7 +326,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
     ? (timeLeft / CONFIG.TIME_LIMIT[difficulty]) * 100
     : 0;
 
-  // ── Combo tiles ─────────────────────────────────────────
   const renderCombo = (forPrompt = false) => (
     <div
       style={{
@@ -374,7 +373,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
     </div>
   );
 
-  // ── Mobile keyboard ──────────────────────────────────────
   const KB_ROWS = [
     ["q", "w", "e"],
     ["a", "s", "d"],
@@ -498,7 +496,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         userSelect: "none",
       }}
     >
-      {/* Video background */}
       <video
         ref={videoRef}
         style={{
@@ -514,18 +511,16 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         onEnded={handleVideoEnd}
       />
 
-      {/* Frosted vignette overlay */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(to top, rgba(230,232,240,0.55) 0%, rgba(240,242,248,0.08) 50%, rgba(225,228,238,0.38) 100%)",
+            "linear-gradient(to top,rgba(230,232,240,0.55) 0%,rgba(240,242,248,0.08) 50%,rgba(225,228,238,0.38) 100%)",
           pointerEvents: "none",
         }}
       />
 
-      {/* Flash */}
       {flash && (
         <div
           style={{
@@ -542,7 +537,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         />
       )}
 
-      {/* Difficulty badge */}
       <button
         onClick={cycleDifficulty}
         style={{
@@ -569,7 +563,7 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         {diffLabel[difficulty]} <span style={{ opacity: 0.4 }}>↻</span>
       </button>
 
-      {/* VIDEO phase — skip button */}
+      {/* VIDEO phase */}
       {phase === "video" && (
         <div
           style={{
@@ -660,7 +654,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
               to stabilise the plane
             </p>
             {renderCombo(true)}
-            {/* Countdown bar */}
             <div
               style={{
                 width: "100%",
@@ -695,7 +688,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
             zIndex: 10,
           }}
         >
-          {/* Timer bar */}
           <div
             style={{
               margin: "24px 24px 0",
@@ -727,8 +719,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
           >
             {(timeLeft / 1000).toFixed(1)}s
           </p>
-
-          {/* Combo */}
           <div
             style={{
               flex: 1,
@@ -753,15 +743,12 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
               </p>
             )}
           </div>
-
-          {/* Mobile keyboard */}
           <div
             className="lg:hidden"
             style={{ position: "fixed", bottom: 16, left: 16, zIndex: 50 }}
           >
             {renderMobileKeyboard()}
           </div>
-
           <p
             className="hidden lg:block"
             style={{
@@ -833,54 +820,7 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* SUCCESS phase */}
-      {phase === "success" && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            padding: 16,
-          }}
-        >
-          {CONFIG.SUCCESS_COMPONENT ? (
-            <>{CONFIG.SUCCESS_COMPONENT}</>
-          ) : (
-            <GlassCard
-              style={{
-                padding: "32px 40px",
-                maxWidth: 320,
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 16,
-              }}
-            >
-              <button
-                onClick={restartGame}
-                style={{
-                  width: "100%",
-                  padding: "12px 0",
-                  borderRadius: 12,
-                  fontSize: 13,
-                  fontWeight: 900,
-                  background: "rgba(115,125,175,0.75)",
-                  color: "rgba(255,255,255,0.95)",
-                  border: "1px solid rgba(155,165,210,0.5)",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 16px rgba(115,125,175,0.25)",
-                }}
-              >
-                Fly Again
-              </button>
-            </GlassCard>
-          )}
-        </div>
-      )}
+      {/* SUCCESS phase — navigation handled by useEffect above */}
 
       {/* FAIL phase */}
       {phase === "fail" && (

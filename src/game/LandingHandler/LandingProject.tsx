@@ -837,7 +837,12 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
           }}
         >
           {CONFIG.SUCCESS_COMPONENT ? (
-            <>{CONFIG.SUCCESS_COMPONENT}</>
+            <>
+              {(() => {
+                window.location.href = "#/projects";
+                return null;
+              })()}
+            </>
           ) : (
             <GlassCard
               style={{

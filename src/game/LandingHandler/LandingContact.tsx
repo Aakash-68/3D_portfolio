@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import Contact from "../../pages/contactPage";
+import Contact from "../../pages/contactOld";
 import { useVideoPreloader } from "./../../components/useVideoPreloader";
 import VideoPreloaderScreen from "./../../components/VideoPreloaderScreen";
 
@@ -837,7 +837,12 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
           }}
         >
           {CONFIG.SUCCESS_COMPONENT ? (
-            <>{CONFIG.SUCCESS_COMPONENT}</>
+            <>
+              {(() => {
+                window.location.href = "#/contact";
+                return null;
+              })()}
+            </>
           ) : (
             <GlassCard
               style={{

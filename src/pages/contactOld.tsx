@@ -1,162 +1,179 @@
 import { IconPlaneDeparture } from "@tabler/icons-react";
-import { Icon } from "lucide-react";
 import { useState } from "react";
 
-const TO = "aakash.27@unb.ca";
+const contactDetails = [
+  {
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        className="w-5 h-5"
+      >
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+        <polyline points="22,6 12,13 2,6" />
+      </svg>
+    ),
+    label: "Email",
+    value: "aakash.27@unb.ca",
+    href: "mailto:aakash.27@unb.ca",
+    stamp: "📮",
+  },
+  {
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        className="w-5 h-5"
+      >
+        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+        <rect x="2" y="9" width="4" height="12" />
+        <circle cx="4" cy="4" r="2" />
+      </svg>
+    ),
+    label: "LinkedIn",
+    value: "https://www.linkedin.com/in/aakash-yogabalu-0a85652a8/",
+    href: "https://www.linkedin.com/in/aakash-yogabalu-0a85652a8/",
+    stamp: "🔗",
+  },
+  {
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        className="w-5 h-5"
+      >
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+      </svg>
+    ),
+    label: "GitHub",
+    value: "github.com/aakash-68",
+    href: "https://github.com/Aakash-68",
+    stamp: "💻",
+  },
+  {
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.8}
+        className="w-5 h-5"
+      >
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </svg>
+    ),
+    label: "Location",
+    value: "Fredericton, NB, Canada",
+    href: "https://maps.google.com/?q=Fredericton,NB",
+    stamp: "📍",
+  },
+];
 
-type FormState = {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-};
-
-export default function ContactForm() {
-  const [form, setForm] = useState<FormState>({
+export default function Contact() {
+  const [formState, setFormState] = useState({
     name: "",
     email: "",
-    subject: "",
     message: "",
   });
+  const [sent, setSent] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
 
-  const [sent, setSent] = useState<boolean>(false);
-
-  const onChange = <K extends keyof FormState>(k: K, v: FormState[K]) => {
-    setForm((p) => ({ ...p, [k]: v }));
-  };
-
-  const handleSend = (): void => {
-    const mailto =
-      `mailto:${TO}` +
-      `?subject=${encodeURIComponent(form.subject || "(no subject)")}` +
-      `&body=${encodeURIComponent(
-        `Hi, my name is ${form.name}.\n\n${form.message}\n\nReply to: ${form.email}`,
-      )}`;
-
-    window.location.href = mailto;
-
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setSent(true);
-    setTimeout(() => setSent(false), 4000);
+    setTimeout(() => setSent(false), 3000);
+    setFormState({ name: "", email: "", message: "" });
   };
+  const BASE = (import.meta as any).env.BASE_URL;
 
   return (
-    <div className="relative flex flex-col items-center justify-center overflow-hidden bg-[#fdf8f5] w-[95vw] max-h-full max-w-full py-10 rounded-[40px]">
-      {" "}
-      {/* Orbs */}
-      <div className="pointer-events-none absolute left-[15%] top-[10%] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle,rgba(255,180,140,0.45)_0%,transparent_70%)]" />
-      <div className="pointer-events-none absolute bottom-[10%] right-[15%] h-[360px] w-[360px] rounded-full bg-[radial-gradient(circle,rgba(220,160,200,0.35)_0%,transparent_70%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,210,170,0.3)_0%,transparent_70%)]" />
-      {/* Header */}
-      <div className="z-10 mb-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-[#aaa] ">
-        Let&apos;s create something together.
-      </div>
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-[440px] rounded-[20px] border border-black/5 bg-white/90 p-9 shadow-[0_8px_40px_rgba(0,0,0,0.06)] backdrop-blur-[20px]">
-        <button
-          className="absolute right-4 top-4 rounded-full p-2 bg-[#ffbbbb] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
-          aria-label="Take off"
-        >
-          <a
-            href="#/"
-            className="flex items-center gap-1 text-[13px] text-[#555]"
-          >
-            <IconPlaneDeparture className="h-6 w-6" name="plane-departure" />
-          </a>
-        </button>
-        <h2 className="m-0 text-[22px] font-bold tracking-[-0.3px] text-[#111]">
-          Send me a mail
-        </h2>
+    <section className="relative min-h-screen flex items-center justify-center overflow-y-auto overflow-auto rounded-lg shadow-lg bg-white/80 backdrop-blur-sm border border-[#5a3825]/20 lg:scale-[.8] lg:origin-center">
+      {/* Background image */}
+      <div
+        className="hidden lg:block sm:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${BASE}assets/Images/ContactBg.png)`,
+        }}
+      />
+      {/* subtle warm overlay to unify */}
+      <div className="   inset-0 bg-amber-50/10" />
 
-        <p className="mt-1.5 text-[13.5px] text-[#888]">
-          Drop a message and I&apos;ll get back soon
-        </p>
+      {/* Main postcard content — right half */}
+      <div className="relative z-10 w-full min-h-screen flex">
+        {/* Left spacer — left half belongs to the background art */}
+        <div className="hidden lg:block lg:w-1/2" />
 
-        <div className="my-5 h-px bg-[#f0eded]" />
-
-        {/* Fields */}
-        <div className="flex flex-col gap-[18px]">
-          {/* Name */}
-          <div className="flex flex-col gap-[7px]">
-            <label className="flex items-center gap-1 text-[13px] font-semibold text-[#222]">
-              Your Name <span className="text-[#e55]">*</span>
-            </label>
-
-            <input
-              className="w-full rounded-[10px] border border-[#e8e4e0] bg-[#fdfcfb] px-3.5 py-2.5 text-[14px] text-[#333] outline-none transition focus:border-black/20"
-              type="text"
-              placeholder="Alex Ratner"
-              value={form.name}
-              onChange={(e) => onChange("name", e.target.value)}
-            />
-          </div>
-
-          {/* Email */}
-          <div className="flex flex-col gap-[7px]">
-            <label className="flex items-center gap-1 text-[13px] font-semibold text-[#222]">
-              Your Email <span className="text-[#e55]">*</span>
-            </label>
-
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 z-[1] -translate-y-1/2 text-[13px] text-[#aaa]">
-                ✉
-              </span>
-
-              <input
-                className="w-full rounded-[10px] border border-[#e8e4e0] bg-[#fdfcfb] py-2.5 pl-9 pr-3.5 text-[14px] text-[#333] outline-none transition focus:border-black/20"
-                type="email"
-                placeholder="you@example.com"
-                value={form.email}
-                onChange={(e) => onChange("email", e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Subject */}
-          <div className="flex flex-col gap-[7px]">
-            <label className="text-[13px] font-semibold text-[#222]">
-              Subject
-            </label>
-
-            <input
-              className="w-full rounded-[10px] border border-[#e8e4e0] bg-[#fdfcfb] px-3.5 py-2.5 text-[14px] text-[#333] outline-none transition focus:border-black/20"
-              type="text"
-              placeholder="What's on your mind?"
-              value={form.subject}
-              onChange={(e) => onChange("subject", e.target.value)}
-            />
-          </div>
-
-          {/* Message */}
-          <div className="flex flex-col gap-[7px]">
-            <label className="flex items-center gap-1 text-[13px] font-semibold text-[#222]">
-              Message <span className="text-[#e55]">*</span>
-            </label>
-
-            <textarea
-              className="min-h-[100px] w-full resize-y rounded-[10px] border border-[#e8e4e0] bg-[#fdfcfb] px-3.5 py-2.5 text-[14px] text-[#333] outline-none transition focus:border-black/20"
-              placeholder="Tell me everything…"
-              value={form.message}
-              onChange={(e) => onChange("message", e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="mt-7 flex items-center justify-between">
-          <span className="text-[12px] text-[#bbb]">→ {TO}</span>
-
+        {/* Right panel */}
+        <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-12 py-16 gap-8">
+          {/* ── Contact detail cards ── */}
           <button
-            onClick={handleSend}
-            className={`rounded-[10px] px-[22px] py-2.5 text-[13.5px] font-medium tracking-[0.2px] text-white transition-all duration-200 ${
-              sent
-                ? "bg-[#555]"
-                : "bg-[#111] hover:scale-[1.02] hover:bg-black active:scale-[0.98]"
-            }`}
+            className="absolute left-4 top-4 rounded-full p-2 bg-[#ffbbbb] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
+            aria-label="Take off"
           >
-            {sent ? "Opening mail… ✓" : "Send mail →"}
+            <a
+              href="#/"
+              className="flex items-center gap-1 text-[13px] text-[#555]"
+            >
+              <IconPlaneDeparture className="h-6 w-6" name="plane-departure" />
+            </a>
           </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {contactDetails.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-start gap-3 bg-white/70 backdrop-blur-sm border border-[#5a3825]/20 rounded-sm px-4 py-3 shadow-sm hover:bg-white/90 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              >
+                {/* stamp-corner */}
+                <span className="text-base leading-none mt-0.5 select-none">
+                  {item.stamp}
+                </span>
+                <div className="flex flex-col min-w-0">
+                  <span
+                    className="text-[10px] uppercase tracking-widest font-semibold"
+                    style={{ color: "#5a3825", fontFamily: "monospace" }}
+                  >
+                    {item.label}
+                  </span>
+                  <span
+                    className="text-sm truncate mt-0.5 group-hover:underline"
+                    style={{ color: "#2c1a0e" }}
+                  >
+                    {item.value}
+                  </span>
+                </div>
+                <span
+                  className="ml-auto text-[#5a3825]/40 group-hover:text-[#5a3825] transition-colors text-xs mt-1"
+                  style={{ fontFamily: "monospace" }}
+                >
+                  →
+                </span>
+              </a>
+            ))}
+          </div>
+
+          {/* ── Postcard ruled-line divider ── */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 border-t border-[#5a3825]/30" />
+            <span
+              className="text-[11px] uppercase tracking-[0.2em] text-[#5a3825]/60"
+              style={{ fontFamily: "monospace" }}
+            >
+              write back
+            </span>
+            <div className="flex-1 border-t border-[#5a3825]/30" />
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

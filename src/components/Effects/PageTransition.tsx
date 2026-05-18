@@ -3,12 +3,12 @@ import { useLocation } from "react-router-dom";
 import { animate } from "motion/react";
 
 // Only trigger transition when navigating to/from these routes
-const TRANSITION_ROUTES = new Set(["/about", "/contact"]);
+const TRANSITION_ROUTES = new Set(["/about", "/contact", "/projects"]);
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/ALand": "About",
-  "/PLand": "Projects",
-  "/CLand": "Contact",
+  "/about": "About",
+  "/projects": "Projects",
+  "/contact": "Contact",
 };
 
 const EASE_QUART = [0.76, 0, 0.24, 1] as [number, number, number, number];

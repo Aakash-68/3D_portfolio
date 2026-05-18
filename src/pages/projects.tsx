@@ -5,6 +5,8 @@ import CommitPP from "./ProjectDetails/commitPP";
 import FileSharingPagePlaceholder from "./ProjectDetails/P2P";
 import DinoPagePlaceholder from "./ProjectDetails/Dino";
 
+import { useEffect, useRef, useState } from "react";
+
 /*
  * Each item now carries an `overlayContent` React node.
  * Swap `<ProjectPagePlaceholder …/>` for your own page component whenever
@@ -97,13 +99,43 @@ const demoItems: MenuItemData[] = [
 ];
 
 export default function Projects() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Staggered entry animation on mount
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 80);
+    return () => clearTimeout(t);
+  }, []);
   return (
     <>
       {/* Mobile: fullscreen, no title */}
       <div className="md:hidden" style={{ width: "100vw", height: "100vh" }}>
         <FlowingMenu items={demoItems} speed={14} />
+        <a
+          href="/"
+          style={{
+            fontFamily: '"Bebas Neue", sans-serif',
+            fontSize: "20px",
+            letterSpacing: "0.06em",
+            color: "#1a1a18",
+            textDecoration: "none",
+            transition: "letter-spacing 0.2s",
+          }}
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.letterSpacing =
+              "0.12em")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLAnchorElement).style.letterSpacing =
+              "0.06em")
+          }
+        >
+          ← BACK HOME
+        </a>
       </div>
 
+      {/* Desktop: page layout with title + centred card */}
       {/* Desktop: page layout with title + centred card */}
       <div
         className="flowing-menu hidden md:flex flex-col items-center"
@@ -112,7 +144,8 @@ export default function Projects() {
           minHeight: "100vh",
           background: "#f5f4ef",
           paddingTop: "3rem",
-          paddingBottom: "3rem",
+          paddingBottom: "0", // ← remove bottom padding; footer handles its own
+          boxSizing: "border-box",
         }}
       >
         <p
@@ -137,20 +170,65 @@ export default function Projects() {
             position: "relative",
           }}
         >
-          {/* Fly-to-game button */}
-          <button
-            className="absolute right-4 top-4 z-10 rounded-full p-2 bg-[#ffbbbb] text-[#aaa] transition hover:bg-[#b9b9b9] hover:text-[#555]"
-            aria-label="Take off"
-          >
-            <a
-              href="#/"
-              className="flex items-center gap-1 text-[13px] text-[#555]"
-            >
-              <IconPlaneDeparture className="h-6 w-6" name="plane-departure" />
-            </a>
-          </button>
-
           <FlowingMenu items={demoItems} speed={14} />
+        </div>
+
+        {/* ── Divider ───────────────────────────────────────────────── */}
+        <div
+          style={{
+            width: "80%",
+            maxWidth: "1100px",
+            borderTop: "1px solid #1a1a18",
+            marginTop: "2rem", // ← gap between menu and line
+            opacity: visible ? 1 : 0,
+            transition: "opacity 0.5s ease 0.7s",
+          }}
+        />
+
+        {/* ── Footer line ───────────────────────────────────────────── */}
+        <div
+          className="flex items-center justify-between"
+          style={{
+            width: "80%",
+            maxWidth: "1100px",
+            paddingTop: "1.75rem",
+            paddingBottom: "1.75rem",
+            opacity: visible ? 1 : 0,
+            transition: "opacity 0.5s ease 0.8s",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: '"Space Mono", monospace',
+              fontSize: "9px",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "#888880",
+            }}
+          >
+            © {new Date().getFullYear()} Aakash
+          </span>
+          <a
+            href="/"
+            style={{
+              fontFamily: '"Bebas Neue", sans-serif',
+              fontSize: "20px",
+              letterSpacing: "0.06em",
+              color: "#1a1a18",
+              textDecoration: "none",
+              transition: "letter-spacing 0.2s",
+            }}
+            onMouseEnter={(e) =>
+              ((e.currentTarget as HTMLAnchorElement).style.letterSpacing =
+                "0.12em")
+            }
+            onMouseLeave={(e) =>
+              ((e.currentTarget as HTMLAnchorElement).style.letterSpacing =
+                "0.06em")
+            }
+          >
+            ← BACK HOME
+          </a>
         </div>
       </div>
     </>
