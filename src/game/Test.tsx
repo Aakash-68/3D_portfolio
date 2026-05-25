@@ -49,12 +49,12 @@ export default function Test() {
       <Bottomblur
         target="parent"
         position="bottom"
-        height={window.innerWidth > 768 ? "5rem" : "0rem"}
         strength={1}
         divCount={5}
         curve="bezier"
         exponential
         opacity={1}
+        className="md:hidden"
       />
       {/* ── Mobile controls ────────────────────────────────────────── */}
       {isMobile && (

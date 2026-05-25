@@ -1,6 +1,5 @@
 import React from "react";
 import { useProgress } from "@react-three/drei";
-import { Slab } from "react-loading-indicators";
 import Loader from "./Loader";
 
 interface LoadingScreenProps {
@@ -18,14 +17,18 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-white">
       <div className="flex flex-col items-center justify-center gap-6">
-        {/* Loader 
-        <Slab color="#000000" size="large" text="" textColor="" />*/}
         <Loader />
+
         {/* Title */}
         <h1 className="text-2xl text-black font-semibold">Loading...</h1>
 
         {/* Progress */}
         <p className="text-black text-sm">{Math.round(progress)}%</p>
+
+        {/* 👇 Mobile / Tablet hint */}
+        <p className="text-gray-400 text-xs -mt-2 md:hidden">
+          Tilt your device horizontal for a better experience
+        </p>
 
         {/* Button */}
         <button
