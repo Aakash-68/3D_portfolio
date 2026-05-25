@@ -13,6 +13,7 @@ import PLandGame from "./game/LandingHandler/LandingProject.tsx";
 import Contact from "./pages/contactOld.tsx";
 import About from "./pages/about.tsx";
 import ContactPage from "./pages/contact.tsx";
+import ALandtest from "./game/LandingHandler/LAtest.tsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/Aland" element={<ALandGame />} />
+        <Route path="/A" element={<ALandtest />} />
         <Route path="/Cland" element={<CLandGame />} />
         <Route path="/Pland" element={<PLandGame />} />
       </Routes>

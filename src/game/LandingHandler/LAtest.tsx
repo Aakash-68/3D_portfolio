@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import Contact from "../../pages/contactOld";
+import { useNavigate } from "react-router-dom";
 import { useVideoPreloader } from "./../../components/useVideoPreloader";
 import VideoPreloaderScreen from "./../../components/VideoPreloaderScreen";
 import PS2DialogBox from "./../../components/dialougeBox";
@@ -10,22 +10,21 @@ const BASE = (import.meta as any).env.BASE_URL;
 const CONFIG = {
   ALLOWED_KEYS: ["q", "w", "e", "a", "s", "d"] as const,
   COMBOS: {
-    easy: { 1: ["ed"], 2: ["ewq"], 3: [] },
-    medium: { 1: ["aw"], 2: ["awd"], 3: ["aaws"] },
-    hard: { 1: ["qeweq"], 2: ["qeese"], 3: ["qeqwd"] },
+    easy: { 1: ["ws"], 2: ["asd"], 3: [] },
+    medium: { 1: ["qa"], 2: ["qwa"], 3: ["qqsa"] },
+    hard: { 1: ["qss"], 2: ["qsse"], 3: ["qdqqe"] },
   } as Record<string, Record<number, string[]>>,
-  PROMPT_DISPLAY_MS: 4000,
-  TIME_LIMIT: { easy: 4000, medium: 2000, hard: 1500 } as Record<
+  PROMPT_DISPLAY_MS: 4500,
+  TIME_LIMIT: { easy: 4000, medium: 2500, hard: 1500 } as Record<
     string,
     number
   >,
   REQUIRED_PASSES: { easy: 1, medium: 2, hard: 3 } as Record<string, number>,
   VIDEOS: {
-    intro: BASE + "assets/Videos/Canada/video1.mp4",
-    video2: BASE + "assets/Videos/Canada/video2.mp4",
-    video3: BASE + "assets/Videos/Canada/video3.mp4",
+    intro: BASE + "assets/Videos/India/video1.mp4",
+    video2: BASE + "assets/Videos/India/video2.mp4",
+    video3: BASE + "assets/Videos/India/video3.mp4",
   } as Record<string, string>,
-  SUCCESS_COMPONENT: (<Contact />) as React.ReactNode,
   DEFAULT_DIFFICULTY: "medium" as Difficulty,
 };
 
@@ -60,7 +59,6 @@ const G = {
   txtTitle: "rgba(60,65,100,0.88)",
   txtSub: "rgba(85,90,118,0.72)",
   txtHint: "rgba(120,128,160,0.55)",
-  dotOff: "rgba(175,180,210,0.32)",
   dotOn: "rgba(115,125,175,0.82)",
   success: "rgba(80,160,120,0.82)",
   danger: "rgba(200,80,80,0.82)",
@@ -96,8 +94,9 @@ function GlassCard({
   );
 }
 
-export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
+export default function ALandtest({ themeIndex = 0 }: { themeIndex?: number }) {
   const { ready, progress, objectUrls } = useVideoPreloader(VIDEO_URLS);
+  const navigate = useNavigate();
 
   const resolveUrl = (key: string) => {
     const orig = CONFIG.VIDEOS[key] ?? CONFIG.VIDEOS.intro;
@@ -130,6 +129,10 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
       window.removeEventListener("orientationchange", check);
     };
   }, []);
+
+  useEffect(() => {
+    if (phase === "success") navigate("/about");
+  }, [phase, navigate]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -556,6 +559,7 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         {diffLabel[difficulty]} <span style={{ opacity: 0.4 }}>↻</span>
       </button>
 
+      {/* VIDEO phase */}
       {phase === "video" && (
         <div
           style={{
@@ -615,7 +619,9 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
               wordDelay={80}
             />
           </div>
+          {/* Combo tiles shown below the dialog */}
           <div style={{ marginTop: 12 }}>{renderCombo(true)}</div>
+          {/* Progress bar */}
           <div
             style={{
               width: "min(400px, 80vw)",
@@ -639,6 +645,7 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
+      {/* TYPING phase */}
       {phase === "typing" && (
         <div
           style={{
@@ -725,7 +732,7 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* RESULT phase — PS2 dialog box */}
+      {/* RESULT phase */}
       {phase === "result" && (
         <div
           style={{
@@ -771,59 +778,7 @@ export default function CLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {phase === "success" && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10,
-            padding: 16,
-          }}
-        >
-          {CONFIG.SUCCESS_COMPONENT ? (
-            <>
-              {(() => {
-                window.location.href = "#/contact";
-                return null;
-              })()}
-            </>
-          ) : (
-            <GlassCard
-              style={{
-                padding: "32px 40px",
-                maxWidth: 320,
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 16,
-              }}
-            >
-              <button
-                onClick={restartGame}
-                style={{
-                  width: "100%",
-                  padding: "12px 0",
-                  borderRadius: 12,
-                  fontSize: 13,
-                  fontWeight: 900,
-                  background: "rgba(115,125,175,0.75)",
-                  color: "rgba(255,255,255,0.95)",
-                  border: "1px solid rgba(155,165,210,0.5)",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 16px rgba(115,125,175,0.25)",
-                }}
-              >
-                Fly Again
-              </button>
-            </GlassCard>
-          )}
-        </div>
-      )}
-
+      {/* FAIL phase */}
       {phase === "fail" && (
         <div
           style={{

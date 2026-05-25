@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Projects from "../../pages/projects";
 import { useVideoPreloader } from "./../../components/useVideoPreloader";
 import VideoPreloaderScreen from "./../../components/VideoPreloaderScreen";
+import PS2DialogBox from "./../../components/dialougeBox";
 
 const BASE = (import.meta as any).env.BASE_URL;
 
@@ -11,9 +12,9 @@ const CONFIG = {
   COMBOS: {
     easy: { 1: ["ed"], 2: ["ewq"], 3: [] },
     medium: { 1: ["aa"], 2: ["awq"], 3: ["aawa"] },
-    hard: { 1: ["ada"], 2: ["adqa"], 3: ["aadq"] },
+    hard: { 1: ["adasa"], 2: ["adqae"], 3: ["aadqq"] },
   } as Record<string, Record<number, string[]>>,
-  PROMPT_DISPLAY_MS: 2500,
+  PROMPT_DISPLAY_MS: 4000,
   TIME_LIMIT: { easy: 4000, medium: 2500, hard: 1500 } as Record<
     string,
     number
@@ -33,7 +34,6 @@ const VIDEO_URLS = [
   CONFIG.VIDEOS.video2,
   CONFIG.VIDEOS.video3,
 ];
-
 const LEVELS_FOR_DIFFICULTY: Record<string, number[]> = {
   easy: [1, 2, 2],
   medium: [1, 2, 3],
@@ -50,16 +50,15 @@ const ROUND_COUNT = 3;
 type Difficulty = "easy" | "medium" | "hard";
 type GamePhase = "video" | "prompt" | "typing" | "result" | "success" | "fail";
 
-// ── Glassmorphism tokens ───────────────────────────────────
 const G = {
   card: "rgba(255,255,255,0.52)",
   cardBorder: "1px solid rgba(255,255,255,0.78)",
   cardShadow:
     "0 8px 32px rgba(130,138,170,0.16),inset 0 1px 0 rgba(255,255,255,0.92)",
   track: "rgba(175,180,210,0.28)",
-  bar: "rgba(140,148,192,0.75)",
-  txtTitle: "rgba(60,65,100,0.88)",
-  txtSub: "rgba(85,90,118,0.72)",
+  bar: "rgba(140,148,192,1)",
+  txtTitle: "rgba(60,65,100,1)",
+  txtSub: "rgba(85,90,118,1)",
   txtHint: "rgba(120,128,160,0.55)",
   dotOff: "rgba(175,180,210,0.32)",
   dotOn: "rgba(115,125,175,0.82)",
@@ -174,7 +173,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
     [objectUrls],
   );
 
-  // Bootstrap once videos are ready
   useEffect(() => {
     if (!ready) return;
     setPasses(0);
@@ -323,7 +321,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
     ? (timeLeft / CONFIG.TIME_LIMIT[difficulty]) * 100
     : 0;
 
-  // ── Combo tiles ────────────────────────────────────────────
   const renderCombo = (forPrompt = false) => (
     <div
       style={{
@@ -371,7 +368,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
     </div>
   );
 
-  // ── Mobile keyboard ────────────────────────────────────────
   const KB_ROWS = [
     ["q", "w", "e"],
     ["a", "s", "d"],
@@ -495,7 +491,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         userSelect: "none",
       }}
     >
-      {/* Video background */}
       <video
         ref={videoRef}
         style={{
@@ -510,8 +505,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         muted
         onEnded={handleVideoEnd}
       />
-
-      {/* Frosted vignette */}
       <div
         style={{
           position: "absolute",
@@ -521,8 +514,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
           pointerEvents: "none",
         }}
       />
-
-      {/* Flash */}
       {flash && (
         <div
           style={{
@@ -539,7 +530,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         />
       )}
 
-      {/* Difficulty badge */}
       <button
         onClick={cycleDifficulty}
         style={{
@@ -566,7 +556,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         {diffLabel[difficulty]} <span style={{ opacity: 0.4 }}>↻</span>
       </button>
 
-      {/* VIDEO phase */}
       {phase === "video" && (
         <div
           style={{
@@ -604,83 +593,52 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* PROMPT phase */}
+      {/* PROMPT phase — PS2 dialog box */}
       {phase === "prompt" && (
         <div
           style={{
             position: "absolute",
             inset: 0,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-end",
             zIndex: 10,
+            paddingBottom: 24,
+            opacity: showPromptCard ? 1 : 0,
+            transition: "opacity 0.3s",
           }}
         >
-          <GlassCard
+          <div style={{ width: "100%", maxWidth: 700 }}>
+            <PS2DialogBox
+              text={`Pilot! Round ${roundIndex + 1} of ${ROUND_COUNT}. Retype the combination to stabilise the plane. Type: ${currentCombo.toUpperCase()}`}
+              wordDelay={80}
+            />
+          </div>
+          <div style={{ marginTop: 12 }}>{renderCombo(true)}</div>
+          <div
             style={{
-              padding: "32px 40px",
-              maxWidth: 320,
-              width: "calc(100% - 32px)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 16,
-              opacity: showPromptCard ? 1 : 0,
-              transform: showPromptCard ? "scale(1)" : "scale(0.94)",
-              transition: "all 0.3s",
+              width: "min(400px, 80vw)",
+              height: 3,
+              background: G.track,
+              borderRadius: 9999,
+              overflow: "hidden",
+              marginTop: 12,
             }}
           >
-            <div style={{ fontSize: 28, opacity: 0.6 }}>📡</div>
-            <p
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: G.txtHint,
-                margin: 0,
-              }}
-            >
-              Round {roundIndex + 1} of {ROUND_COUNT}
-            </p>
-            <p
-              style={{
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: 14,
-                lineHeight: 1.5,
-                color: G.txtTitle,
-                margin: 0,
-              }}
-            >
-              Pilot, retype the combination
-              <br />
-              to stabilise the plane
-            </p>
-            {renderCombo(true)}
             <div
               style={{
-                width: "100%",
-                height: 3,
-                background: G.track,
+                height: "100%",
+                width: `${(1 - promptProgress) * 100}%`,
+                background: G.bar,
                 borderRadius: 9999,
-                overflow: "hidden",
+                transition: "width 50ms linear",
               }}
-            >
-              <div
-                style={{
-                  height: "100%",
-                  width: `${(1 - promptProgress) * 100}%`,
-                  background: G.bar,
-                  borderRadius: 9999,
-                  transition: "width 50ms linear",
-                }}
-              />
-            </div>
-          </GlassCard>
+            />
+          </div>
         </div>
       )}
 
-      {/* TYPING phase */}
       {phase === "typing" && (
         <div
           style={{
@@ -767,7 +725,7 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* RESULT phase */}
+      {/* RESULT phase — PS2 dialog box */}
       {phase === "result" && (
         <div
           style={{
@@ -777,53 +735,42 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
             alignItems: "flex-end",
             justifyContent: "center",
             zIndex: 10,
-            paddingBottom: 40,
+            paddingBottom: 24,
           }}
         >
-          <GlassCard
+          <div style={{ width: "100%", maxWidth: 700 }}>
+            <PS2DialogBox
+              text={
+                roundResults[roundResults.length - 1]
+                  ? "Systems stabilised! The plane holds steady. Well done, pilot. Prepare for the next challenge."
+                  : "Stabilisation failed! The turbulence was too strong this time. Brace yourself and continue."
+              }
+              wordDelay={70}
+            />
+          </div>
+          <button
+            onClick={advanceAfterResult}
             style={{
-              padding: "20px 32px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 12,
+              position: "absolute",
+              bottom: 20,
+              right: 24,
+              padding: "8px 24px",
+              borderRadius: 10,
+              fontSize: 12,
+              fontWeight: 700,
+              background: "rgba(255,255,255,0.65)",
+              border: "1px solid rgba(255,255,255,0.85)",
+              color: G.txtTitle,
+              cursor: "pointer",
+              backdropFilter: "blur(12px)",
+              zIndex: 11,
             }}
           >
-            <p
-              style={{
-                fontWeight: 700,
-                fontSize: 15,
-                color: roundResults[roundResults.length - 1]
-                  ? G.success
-                  : G.danger,
-                margin: 0,
-              }}
-            >
-              {roundResults[roundResults.length - 1]
-                ? "✅ Stabilised!"
-                : "❌ Failed!"}
-            </p>
-            <button
-              onClick={advanceAfterResult}
-              style={{
-                padding: "8px 24px",
-                borderRadius: 10,
-                fontSize: 12,
-                fontWeight: 700,
-                background: "rgba(255,255,255,0.65)",
-                border: "1px solid rgba(255,255,255,0.85)",
-                color: G.txtTitle,
-                cursor: "pointer",
-                backdropFilter: "blur(12px)",
-              }}
-            >
-              Continue ›
-            </button>
-          </GlassCard>
+            Continue ›
+          </button>
         </div>
       )}
 
-      {/* SUCCESS phase */}
       {phase === "success" && (
         <div
           style={{
@@ -877,7 +824,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* FAIL phase */}
       {phase === "fail" && (
         <div
           style={{

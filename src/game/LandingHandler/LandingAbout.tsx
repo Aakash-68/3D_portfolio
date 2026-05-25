@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVideoPreloader } from "./../../components/useVideoPreloader";
 import VideoPreloaderScreen from "./../../components/VideoPreloaderScreen";
+import PS2DialogBox from "./../../components/dialougeBox";
 
 const BASE = (import.meta as any).env.BASE_URL;
 
@@ -11,9 +12,9 @@ const CONFIG = {
   COMBOS: {
     easy: { 1: ["ws"], 2: ["asd"], 3: [] },
     medium: { 1: ["qa"], 2: ["qwa"], 3: ["qqsa"] },
-    hard: { 1: ["qss"], 2: ["qsse"], 3: ["qdqqe"] },
+    hard: { 1: ["qssqa"], 2: ["qsseq"], 3: ["qdqqe"] },
   } as Record<string, Record<number, string[]>>,
-  PROMPT_DISPLAY_MS: 2500,
+  PROMPT_DISPLAY_MS: 4500,
   TIME_LIMIT: { easy: 4000, medium: 2500, hard: 1500 } as Record<
     string,
     number
@@ -129,11 +130,8 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
     };
   }, []);
 
-  // ── Navigate on success ──────────────────────────────────
   useEffect(() => {
-    if (phase === "success") {
-      navigate("/about");
-    }
+    if (phase === "success") navigate("/about");
   }, [phase, navigate]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -510,7 +508,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         muted
         onEnded={handleVideoEnd}
       />
-
       <div
         style={{
           position: "absolute",
@@ -520,7 +517,6 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
           pointerEvents: "none",
         }}
       />
-
       {flash && (
         <div
           style={{
@@ -601,79 +597,51 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* PROMPT phase */}
+      {/* PROMPT phase — PS2 dialog box */}
       {phase === "prompt" && (
         <div
           style={{
             position: "absolute",
             inset: 0,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-end",
             zIndex: 10,
+            paddingBottom: 24,
+            opacity: showPromptCard ? 1 : 0,
+            transition: "opacity 0.3s",
           }}
         >
-          <GlassCard
+          <div style={{ width: "100%", maxWidth: 700 }}>
+            <PS2DialogBox
+              text={`Pilot! Round ${roundIndex + 1} of ${ROUND_COUNT}. Retype the combination to stabilise the plane. Type: ${currentCombo.toUpperCase()}`}
+              wordDelay={80}
+            />
+          </div>
+          {/* Combo tiles shown below the dialog */}
+          <div style={{ marginTop: 12 }}>{renderCombo(true)}</div>
+          {/* Progress bar */}
+          <div
             style={{
-              padding: "32px 40px",
-              maxWidth: 320,
-              width: "calc(100% - 32px)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 16,
-              opacity: showPromptCard ? 1 : 0,
-              transform: showPromptCard ? "scale(1)" : "scale(0.94)",
-              transition: "all 0.3s",
+              width: "min(400px, 80vw)",
+              height: 3,
+              background: G.track,
+              borderRadius: 9999,
+              overflow: "hidden",
+              marginTop: 12,
             }}
           >
-            <div style={{ fontSize: 28, opacity: 0.6 }}>📡</div>
-            <p
-              style={{
-                fontSize: 11,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: G.txtHint,
-                margin: 0,
-              }}
-            >
-              Round {roundIndex + 1} of {ROUND_COUNT}
-            </p>
-            <p
-              style={{
-                textAlign: "center",
-                fontWeight: 700,
-                fontSize: 14,
-                lineHeight: 1.5,
-                color: G.txtTitle,
-                margin: 0,
-              }}
-            >
-              Pilot, retype the combination
-              <br />
-              to stabilise the plane
-            </p>
-            {renderCombo(true)}
             <div
               style={{
-                width: "100%",
-                height: 3,
-                background: G.track,
+                height: "100%",
+                width: `${(1 - promptProgress) * 100}%`,
+                background: G.bar,
                 borderRadius: 9999,
-                overflow: "hidden",
+                transition: "width 50ms linear",
               }}
-            >
-              <div
-                style={{
-                  height: "100%",
-                  width: `${(1 - promptProgress) * 100}%`,
-                  background: G.bar,
-                  borderRadius: 9999,
-                  transition: "width 50ms linear",
-                }}
-              />
-            </div>
-          </GlassCard>
+            />
+          </div>
         </div>
       )}
 
@@ -774,53 +742,41 @@ export default function ALandGame({ themeIndex = 0 }: { themeIndex?: number }) {
             alignItems: "flex-end",
             justifyContent: "center",
             zIndex: 10,
-            paddingBottom: 40,
+            paddingBottom: 24,
           }}
         >
-          <GlassCard
+          <div style={{ width: "100%", maxWidth: 700 }}>
+            <PS2DialogBox
+              text={
+                roundResults[roundResults.length - 1]
+                  ? "Systems stabilised! The plane holds steady. Well done, pilot. Prepare for the next challenge."
+                  : "Stabilisation failed! The turbulence was too strong this time. Brace yourself and continue."
+              }
+              wordDelay={70}
+            />
+          </div>
+          <button
+            onClick={advanceAfterResult}
             style={{
-              padding: "20px 32px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 12,
+              position: "absolute",
+              bottom: 20,
+              right: 24,
+              padding: "8px 24px",
+              borderRadius: 10,
+              fontSize: 12,
+              fontWeight: 700,
+              background: "rgba(255,255,255,0.65)",
+              border: "1px solid rgba(255,255,255,0.85)",
+              color: G.txtTitle,
+              cursor: "pointer",
+              backdropFilter: "blur(12px)",
+              zIndex: 11,
             }}
           >
-            <p
-              style={{
-                fontWeight: 700,
-                fontSize: 15,
-                color: roundResults[roundResults.length - 1]
-                  ? G.success
-                  : G.danger,
-                margin: 0,
-              }}
-            >
-              {roundResults[roundResults.length - 1]
-                ? "✅ Stabilised!"
-                : "❌ Failed!"}
-            </p>
-            <button
-              onClick={advanceAfterResult}
-              style={{
-                padding: "8px 24px",
-                borderRadius: 10,
-                fontSize: 12,
-                fontWeight: 700,
-                background: "rgba(255,255,255,0.65)",
-                border: "1px solid rgba(255,255,255,0.85)",
-                color: G.txtTitle,
-                cursor: "pointer",
-                backdropFilter: "blur(12px)",
-              }}
-            >
-              Continue ›
-            </button>
-          </GlassCard>
+            Continue ›
+          </button>
         </div>
       )}
-
-      {/* SUCCESS phase — navigation handled by useEffect above */}
 
       {/* FAIL phase */}
       {phase === "fail" && (
