@@ -729,9 +729,9 @@ export default function PipCameraPanel({
           <kbd className="text-white/50 text-[10px] font-mono">M</kbd>
           <button
             onClick={() => setVisible(false)}
-            className="w-4 h-4 rounded-full border border-white/35 bg-white/15
-              flex items-center justify-center text-white/80 text-[10px]
-              hover:bg-white/30 transition-colors cursor-pointer"
+            className="w-4 h-4 rounded-full border border-white/35 bg-[#ff5f57]/50
+                      flex items-center justify-center text-white/80 text-[10px]
+                      hover:bg-[#ff5f57]/70 transition-colors cursor-pointer"
           >
             ✕
           </button>
@@ -854,7 +854,7 @@ export default function PipCameraPanel({
         </div>
 
         <div className="absolute bottom-1.5 right-0 flex justify-center pointer-events-none">
-          <span className="text-[9px] text-white/40 font-mono bg-black/20 px-1.5 py-0.5 rounded">
+          <span className="text-[9px] text-white/80 font-mono bg-black/30 px-1.5 py-0.5 rounded">
             · drag to orbit · click dot to navigate
           </span>
         </div>

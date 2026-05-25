@@ -255,11 +255,12 @@ export default function MiniMap({ planeRef }: Props) {
           <kbd className="text-white/50 text-[10px] font-mono">M</kbd>
           <button
             onClick={() => setVisible(false)}
-            className="w-4 h-4 rounded-full border border-white/35 bg-white/15 
-              flex items-center justify-center text-white/80 text-[10px] 
-              hover:bg-white/25 transition-colors cursor-pointer"
+            className="w-4 h-4 rounded-full border border-white/35 
+                    bg-[#ff5f57]/50
+                    flex items-center justify-center text-white/80 text-[10px] 
+                    hover:bg-[#ff5f57]/70 transition-colors cursor-pointer"
           >
-            ✕
+            X
           </button>
         </div>
       </div>

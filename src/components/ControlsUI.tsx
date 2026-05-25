@@ -173,18 +173,18 @@ export default function ControlsUI() {
           </span>
         </div>
 
-        {/* Close button */}
         <button
           onClick={() => setOpen(false)}
           title="Close (H)"
           className="
-            w-5 h-5 rounded-full
-            flex items-center justify-center
-            bg-white/10 border border-white/20
-            text-white/50 text-[10px]
-            hover:bg-white/20 hover:text-white/80
-            transition-all duration-150 cursor-pointer
-          "
+    w-5 h-5 rounded-full
+    flex items-center justify-center
+    backdrop-blur-md
+    bg-[#ff5f57]/50 border border-white/20
+    text-white/40 text-[10px]
+    hover:brightness-110
+    transition-all duration-150 cursor-pointer
+  "
         >
           ✕
         </button>
