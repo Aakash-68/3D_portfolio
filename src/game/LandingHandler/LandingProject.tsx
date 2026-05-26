@@ -530,32 +530,23 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         />
       )}
 
-      <button
-        onClick={cycleDifficulty}
-        style={{
-          position: "absolute",
-          top: 16,
-          right: 16,
-          zIndex: 30,
-          padding: "6px 16px",
-          borderRadius: 9999,
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          background: "rgba(255,255,255,0.55)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.8)",
-          color: G.txtSub,
-          boxShadow: "0 2px 12px rgba(130,138,170,0.14)",
-          cursor: "pointer",
-          transition: "all 0.15s",
-        }}
-      >
-        {diffLabel[difficulty]} <span style={{ opacity: 0.4 }}>↻</span>
-      </button>
-
+      {/* Top-right: difficulty + skip stacked */}
+      <div className="absolute top-8 right-4 z-30 flex flex-col gap-2">
+        <button
+          onClick={cycleDifficulty}
+          className="px-4 py-[6px] rounded-full text-[11px] font-bold tracking-[0.12em] uppercase bg-white/50 backdrop-blur-lg border border-white/80 text-slate-700 shadow-[0_2px_12px_rgba(130,138,170,0.14)] cursor-pointer opacity-60 transition-all duration-200 ease-out hover:opacity-100 hover:-translate-y-[2px] hover:shadow-[0_6px_18px_rgba(130,138,170,0.22)]"
+        >
+          {diffLabel[difficulty]} <span className="opacity-40">↻</span>
+        </button>
+        <button
+          onClick={() => {
+            window.location.href = "#/contact";
+          }}
+          className="px-[22px] py-[10px] rounded-full text-[12px] font-bold tracking-[0.08em] uppercase bg-white/50 backdrop-blur-lg border border-white/10 text-slate-800 shadow-[0_2px_12px_rgba(130,138,170,0.18)] whitespace-nowrap cursor-pointer opacity-60 transition-all duration-200 ease-out hover:opacity-100 hover:-translate-y-[2px] hover:shadow-[0_6px_18px_rgba(130,138,170,0.25)]"
+        >
+          Skip the Challenges
+        </button>
+      </div>
       {phase === "video" && (
         <div
           style={{
@@ -593,7 +584,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* PROMPT phase — PS2 dialog box */}
       {phase === "prompt" && (
         <div
           style={{
@@ -725,7 +715,6 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </div>
       )}
 
-      {/* RESULT phase — PS2 dialog box */}
       {phase === "result" && (
         <div
           style={{

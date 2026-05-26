@@ -12,6 +12,7 @@ import Words from "./Words";
 import { LoadingScreen } from "../components/LoadingScreen";
 import ControlsUI from "./../components/ControlsUI";
 import PipCameraPanel from "./MapHandler/PIPcameraPanel";
+import LandPrompt from "../components/LandPrompt";
 
 interface Config {
   globeRotationSpeed: number;
@@ -62,9 +63,21 @@ export default function PlaneGame({
   const [started, setStart] = useState(false);
   const [activeHitboxIndex, setActiveHitboxIndex] = useState(-1);
 
+  // Mobile land button fires this to simulate the "interact" trigger
+  const [mobileLandTrigger, setMobileLandTrigger] = useState(false);
+
   const handleHitboxStateChange = useCallback((idx: number) => {
     setActiveHitboxIndex(idx);
   }, []);
+
+  const handleMobileLand = useCallback(() => {
+    // Pulse the trigger so Hitbox.tsx picks it up via useEffect
+    setMobileLandTrigger(true);
+    setTimeout(() => setMobileLandTrigger(false), 100);
+  }, []);
+
+  // Merge external triggerInteract with internal mobile land trigger
+  const effectiveTrigger = triggerInteract || mobileLandTrigger;
 
   return (
     <div className="w-full h-full relative">
@@ -88,7 +101,7 @@ export default function PlaneGame({
           <World
             config={config}
             playerRef={planeRef}
-            triggerInteract={triggerInteract}
+            triggerInteract={effectiveTrigger}
             onHitboxStateChange={handleHitboxStateChange}
           />
           <Words />
@@ -101,7 +114,15 @@ export default function PlaneGame({
         planeRef={planeRef}
         activeHitboxIndex={activeHitboxIndex}
       />
+
+      {/* ── Land prompt (desktop pill + mobile button) ─────────────────────── */}
+      <LandPrompt
+        activeHitboxIndex={activeHitboxIndex}
+        onMobileLand={handleMobileLand}
+      />
+
       <ControlsUI />
+
       {/* ── Loading screen ─────────────────────────────────────────────────── */}
       {!started && (
         <div className="absolute inset-0 z-50">
