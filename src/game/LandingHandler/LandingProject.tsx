@@ -540,7 +540,7 @@ export default function PLandGame({ themeIndex = 0 }: { themeIndex?: number }) {
         </button>
         <button
           onClick={() => {
-            window.location.href = "#/contact";
+            window.location.href = "#/projects";
           }}
           className="px-[22px] py-[10px] rounded-full text-[12px] font-bold tracking-[0.08em] uppercase bg-white/50 backdrop-blur-lg border border-white/10 text-slate-800 shadow-[0_2px_12px_rgba(130,138,170,0.18)] whitespace-nowrap cursor-pointer opacity-60 transition-all duration-200 ease-out hover:opacity-100 hover:-translate-y-[2px] hover:shadow-[0_6px_18px_rgba(130,138,170,0.25)]"
         >
