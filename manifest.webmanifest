@@ -1,0 +1,11 @@
+{
+  "name": "Aakash Yogabalu — 3D Plane Portfolio",
+  "short_name": "Aakash",
+  "start_url": "/",
+  "scope": "/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
